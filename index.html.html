@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Inbound Ops">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F1C2D">
+<title>Inbound Ops Central - Mosaic Wellness</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nav:#0F1C2D;--blue:#2563EB;--teal:#0D9488;--amber:#D97706;
+  --red:#DC2626;--green:#16A34A;--purple:#7C3AED;--orange:#EA580C;
+  --bg:#F0F2F5;--card:#fff;--border:#E4E7EC;
+  --text:#111827;--muted:#6B7280;--faint:#9CA3AF;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+html,body{height:100%;font-family:var(--font);font-size:13px;color:var(--text)}
+.app{display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:46px;background:var(--nav);display:flex;align-items:center;padding:0 16px;flex-shrink:0;gap:12px}
+.topbar img{height:26px;width:auto}
+.tdiv{width:1px;height:22px;background:#1e3352}
+.ttl{font-size:13px;font-weight:600;color:#e2e8f0}
+.ttag{font-size:10px;color:#64748b;margin-left:4px}
+.tr{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tsync{font-size:11px;color:#64748b;display:flex;align-items:center;gap:5px}
+.live{width:6px;height:6px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.un{font-size:12px;color:#e2e8f0;font-weight:500}
+.ur{font-size:10px;color:#64748b}
+.body{display:flex;flex:1;overflow:auto}
+.sidebar{width:220px;background:var(--nav);flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #1e3352;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#2d4a6e}
+.nb{flex:1}
+.ns{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;padding:10px 14px 4px}
+.ni{display:flex;align-items:center;gap:8px;padding:7px 14px;font-size:12px;color:#94a3b8;cursor:pointer;border-left:2px solid transparent;transition:all .1s;user-select:none;white-space:nowrap}
+.ni:hover{color:#e2e8f0;background:rgba(255,255,255,.04)}
+.ni.on{color:#fff;background:rgba(37,99,235,.2);border-left-color:#2563EB;font-weight:500}
+.ni.hide{display:none}
+.ni svg{width:13px;height:13px;flex-shrink:0;opacity:.7}
+.ni.on svg{opacity:1}
+.nd{height:1px;background:#1e3352;margin:6px 14px}
+.rp{padding:10px 14px;border-top:1px solid #1e3352;background:#0a1420;flex-shrink:0}
+.rl{font-size:9px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.rf{font-size:12px;color:#e2e8f0;font-weight:500;padding:5px 8px;background:#1e3352;border-radius:5px;display:flex;align-items:center;gap:6px}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+select.rs{width:100%;background:#1e3352;color:#e2e8f0;border:1px solid #2d4a6e;border-radius:5px;padding:5px 8px;font-size:12px;cursor:pointer;outline:none}
+.main{flex:1;overflow-y:auto;background:var(--bg);min-height:0}
+.main::-webkit-scrollbar{width:5px}
+.main::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+.scr{display:none;padding:14px 16px}
+.scr.on{display:block}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pt{font-size:15px;font-weight:700}
+.ps{font-size:11px;color:var(--muted);margin-top:1px}
+.pa{display:flex;gap:6px;align-items:center}
+.krow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;border-left:3px solid transparent}
+.kl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.kv{font-size:26px;font-weight:800;line-height:1;margin-bottom:2px}
+.ks{font-size:10px;color:var(--faint)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:#fafbfc}
+.ct{font-size:12px;font-weight:600}
+.cb{padding:10px 12px}
+.brow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.bkt{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 6px;cursor:pointer;transition:all .12s;border-top:3px solid transparent;text-align:center}
+.bkt:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.bn{font-size:22px;font-weight:800;line-height:1.1}
+.bl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-top:2px;line-height:1.2}
+.capw{display:flex;align-items:center;gap:10px}
+.capb{flex:1;background:#e5e7eb;border-radius:20px;height:7px;overflow:hidden}
+.capf{height:100%;border-radius:20px;background:var(--blue);transition:width .4s}
+.capt{font-size:11px;color:var(--muted);white-space:nowrap}
+.drow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.dk{border-radius:6px;padding:7px 4px;text-align:center;font-size:10px;font-weight:700;border:1px solid}
+.dk span{display:block;font-size:9px;font-weight:400;margin-top:1px;opacity:.8}
+.dfr{background:#f0fdf4;color:#16a34a;border-color:#bbf7d0}
+.dbu{background:#fef2f2;color:#dc2626;border-color:#fecaca}
+.dbf{background:#fffbeb;color:#d97706;border-color:#fde68a}
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 10px;font-size:10px;font-weight:700;color:var(--muted);background:#f9fafb;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:6px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f9fafb}
+.mono{font-family:monospace;font-size:11px}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.bb{background:#eff6ff;color:#1d4ed8}.bt{background:#f0fdfa;color:#0f766e}
+.ba{background:#fffbeb;color:#b45309}.br{background:#fef2f2;color:#b91c1c}
+.bg{background:#f0fdf4;color:#15803d}.bx{background:#f3f4f6;color:#4b5563}
+.bp{background:#f5f3ff;color:#6d28d9}.bo{background:#fff7ed;color:#c2410c}
+.fg{margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+label{display:block;font-size:10px;font-weight:700;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-size:12px;color:var(--text);background:#fff;font-family:var(--font);outline:none;transition:border-color .1s}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.1)}
+input[readonly]{background:#f9fafb;color:var(--muted)}
+.rrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.ro{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;color:var(--muted);transition:all .1s;user-select:none}
+.ro:hover{border-color:var(--blue)}
+.ro.on{border-color:var(--blue);background:#eff6ff;color:var(--blue);font-weight:600}
+.rc{width:11px;height:11px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ri{width:5px;height:5px;border-radius:50%;background:currentColor;display:none}
+.ro.on .ri{display:block}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:#fff;color:var(--text);font-family:var(--font);transition:all .1s;user-select:none;white-space:nowrap}
+.btn:hover{background:#f9fafb}.btn:active{transform:scale(.98)}
+.btnp{background:var(--blue);color:#fff;border-color:var(--blue)}.btnp:hover{background:#1d4ed8}
+.btng{background:var(--green);color:#fff;border-color:var(--green)}.btng:hover{background:#166534}
+.btns{padding:4px 10px;font-size:11px}
+.al{border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px}
+.aw{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.ai{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+.as{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+.ae{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
+.tok{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.tid{font-family:monospace;font-size:9px;color:var(--faint);margin-bottom:2px}
+.ttl2{font-size:12px;font-weight:600;margin-bottom:1px}
+.tmt{font-size:10px;color:var(--muted)}
+.tac{margin-left:auto;display:flex;gap:6px;align-items:center;flex-shrink:0}
+.sdv{font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;padding-bottom:6px;border-bottom:1px solid var(--border);margin:12px 0 8px}
+.stbl{width:100%;border-collapse:collapse;font-size:11px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.stbl th{background:#f9fafb;padding:5px 8px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border)}
+.stbl td{padding:5px 8px;border-bottom:1px solid var(--border)}
+.stbl tr:last-child td{border-bottom:none}
+.ld{text-align:center;padding:30px;color:var(--muted)}
+.sp{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900;align-items:center;justify-content:center}
+.modal.on{display:flex}
+.mbox{background:#fff;border-radius:10px;padding:24px;width:480px;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto}
+.mhdr{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+
+/* ── MOBILE / PWA ────────────────────────────────────────── */
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:#fff;flex-shrink:0}
+.hamburger svg{width:22px;height:22px;display:block}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:89}
+.sidebar-overlay.on{display:block}
+
+@media(max-width:768px){
+  .hamburger{display:flex;align-items:center;justify-content:center}
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;z-index:90;
+    transform:translateX(-100%);transition:transform .25s ease;
+    padding-top:env(safe-area-inset-top,0px)
+  }
+  .sidebar.open{transform:translateX(0)}
+  .body{flex-direction:column}
+  .main{padding-bottom:env(safe-area-inset-bottom,0px)}
+  .app{padding-top:env(safe-area-inset-top,0px)}
+  .scr{padding:10px}
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+  .tc{grid-template-columns:1fr}
+  table{font-size:11px}
+  th,td{padding:6px 8px}
+  .card{padding:12px;margin-bottom:8px}
+  .ph{flex-direction:column;gap:8px}
+  .pa{flex-wrap:wrap}
+  .mbox{width:95vw;max-height:90vh;overflow-y:auto;margin:auto}
+  .modal{align-items:flex-end}
+  .mbox{border-radius:16px 16px 0 0;padding-bottom:env(safe-area-inset-bottom,16px)}
+  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .btn,.btnp{touch-action:manipulation}
+  input,select,textarea{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <img id="logo-img" alt="Mosaic">
+  <div class="tdiv"></div>
+  <div class="ttl">Inbound Ops Central <span class="ttag">Warehouse &amp; Vendor Scheduling</span></div>
+  <div class="tr">
+    <div class="tsync"><span class="live"></span><span id="sync-txt">Connecting...</span></div>
+    <button class="btn btns" id="refresh-btn">&#8635; Refresh</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="av" id="av" style="background:var(--blue)">AD</div>
+      <div><div class="un" id="uname">Admin</div><div class="ur" id="urole">Admin</div></div>
+    </div>
+  </div>
+</div>
+<div class="body">
+<nav class="sidebar">
+  <div class="nb">
+    <div class="ns">Dashboard</div>
+    <div class="ni on" data-s="dash" data-r="all">
+      <svg viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Control Tower
+    </div>
+    <div class="ni" data-s="reg" data-r="admin,supply_planning,logistics_team,warehouse">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="11" y2="9"/></svg>Shipment Register
+    </div>
+    <div class="nd"></div>
+    <div class="ns">Workflow</div>
+    <div class="ni" data-s="s1" data-r="admin,supply_planning">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Create Shipment
+    </div>
+    <div class="ni" data-s="s2" data-r="admin,logistics_team">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="8" cy="5" r="3"/><path d="M12 8l2 2-2 2"/></svg>Assign Transport Partner
+    </div>
+    <div class="ni" data-s="s3" data-r="admin,logistics_partner">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="7" width="10" height="7" rx="1"/><path d="M11 10h2l2-3V7h-4"/><circle cx="3.5" cy="14" r="1.5"/><circle cx="9.5" cy="14" r="1.5"/></svg>Pickup &amp; Transit
+    </div>
+    <div class="ni" data-s="s4" data-r="admin,security">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l5 2v5c0 3-2 5-5 6C6 13 3 11 3 8V3l5-2z"/><path d="M5.5 8l2 2 3-3"/></svg>Gate In
+    </div>
+    <div class="ni" data-s="s6" data-r="admin,security">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/></svg>Gate Out
+    </div>
+    <div class="ni" data-s="s7" data-r="admin,warehouse">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H2V1z"/><path d="M9 1v4h4"/><line x1="5" y1="9" x2="11" y2="9"/></svg>Upload &amp; Close
+    </div>
+    <div class="nd"></div>
+    <div class="ns">Master Data</div>
+    <div class="ni" data-s="master" data-r="admin,supply_planning">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="8" cy="5" rx="6" ry="2.5"/><path d="M2 5v3c0 1.4 2.7 2.5 6 2.5S14 9.4 14 8V5"/><path d="M2 8v3c0 1.4 2.7 2.5 6 2.5S14 12.4 14 11V8"/></svg>Vendors &amp; Partners
+    </div>
+    <div class="ni" data-s="config" data-r="admin,supply_planning,logistics_team">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.3 3.3l1.4 1.4M11.3 11.3l1.4 1.4M3.3 12.7l1.4-1.4M11.3 4.7l1.4-1.4"/></svg>Configuration
+    </div>
+    <div class="ni" data-s="users" data-r="admin">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="4" r="2.5"/><circle cx="11" cy="4" r="2.5"/><path d="M1 14c0-2.8 1.8-4 4-4h2M10 10c2.2 0 4 1.2 4 4"/><path d="M11 8v4M9 10h4"/></svg>User Management
+    </div>
+  </div>
+  <div class="rp">
+    <div class="rl">Role</div>
+    <div id="role-inner"></div>
+  </div>
+</nav>
+<div class="main">
+  <div class="scr on" id="sc-dash"><div class="ld"><div class="sp"></div>Loading...</div></div>
+  <div class="scr" id="sc-reg">
+    <div class="ph">
+      <div><div class="pt">Shipment Register</div><div class="ps">All shipments — live</div></div>
+      <div class="pa">
+        <select id="reg-step" style="font-size:11px;padding:4px 8px;width:auto">
+          <option value="">All Steps</option><option value="1">Step 1 — Create</option>
+          <option value="2">Step 2 — Assign Partner</option><option value="3">Step 3 — Transit</option>
+          <option value="4">Step 4 — Gate In</option><option value="6">Step 6 — Gate Out</option>
+          <option value="7">Step 7 — Closed</option>
+        </select>
+        <button class="btn btns" id="export-btn">Export CSV</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:0">
+      <div class="tw" id="reg-body"><div class="ld" style="padding:20px"><div class="sp"></div></div></div>
+    </div>
+  </div>
+  <div class="scr" id="sc-s1">
+    <div class="ph"><div><div class="pt">Step 1 — Create Shipment</div><div class="ps">Supply Planning</div></div></div>
+    <div id="s1-ok" class="al as" style="display:none"></div>
+    <div class="tc" style="align-items:start">
+      <div>
+        <div class="card"><div class="ch"><div class="ct">Vendor &amp; Product</div></div><div class="cb">
+          <div class="fg"><label>Vendor</label><select id="s1-vend"><option value="">Select vendor...</option></select></div>
+          <div class="g2">
+            <div class="fg" style="margin-bottom:0"><label>POC Name</label><input id="s1-poc" placeholder="Auto-filled"></div>
+            <div class="fg" style="margin-bottom:0"><label>POC Mobile</label><input id="s1-mob" placeholder="Auto-filled"></div>
+          </div>
+          <div class="fg"><label>Drop Location</label>
+            <div class="rrow" id="r-drop"><div class="ld" style="padding:6px"><div class="sp"></div></div></div>
+          </div>
+          <div class="g2">
+            <div class="fg" style="margin-bottom:0"><label>Product Type</label>
+              <div class="rrow" id="r-pt">
+                <div class="ro on" data-v="FG"><div class="rc"><div class="ri"></div></div>FG</div>
+                <div class="ro" data-v="RM"><div class="rc"><div class="ri"></div></div>RM</div>
+                <div class="ro" data-v="PM"><div class="rc"><div class="ri"></div></div>PM</div>
+                <div class="ro" data-v="NPD"><div class="rc"><div class="ri"></div></div>NPD</div>
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:0"><label>Transit Mode</label>
+              <div class="rrow" id="r-tr">
+                <div class="ro on" data-v="Surface"><div class="rc"><div class="ri"></div></div>Surface</div>
+                <div class="ro" data-v="Air"><div class="rc"><div class="ri"></div></div>Air</div>
+                <div class="ro" data-v="Train"><div class="rc"><div class="ri"></div></div>Train</div>
+              </div>
+            </div>
+          </div>
+          <div id="s1-appr" class="al aw" style="display:none;font-size:11px;margin-top:8px"></div>
+        </div></div>
+        <div class="card"><div class="ch"><div class="ct">Shipment Details</div></div><div class="cb">
+          <div class="g3">
+            <div class="fg" style="margin-bottom:0"><label>Boxes</label><input type="number" id="s1-boxes" placeholder="0"></div>
+            <div class="fg" style="margin-bottom:0"><label>Weight (MT)</label><input type="number" id="s1-wt" step="0.01" placeholder="1.5"></div>
+            <div class="fg" style="margin-bottom:0"><label>Vehicle Size</label><input id="s1-vsz" readonly placeholder="Auto"></div>
+          </div>
+          <div class="fg" style="margin-top:10px"><label>Invoice Number</label><input id="s1-inv" placeholder="INV-HW-2026-1234"></div>
+        </div></div>
+      </div>
+      <div>
+        <div class="card"><div class="ch">
+          <div class="ct">PO &amp; SKUs</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select id="s1-po" style="font-size:11px;padding:3px 7px;width:160px"><option value="">Select PO...</option></select>
+            <button class="btn btns" id="po-sync-btn">Sync</button>
+            <span id="po-sync-time" style="font-size:10px;color:var(--faint)">—</span>
+          </div>
+        </div><div class="cb" style="padding:8px 12px">
+          <div id="s1-po-err" class="al ae" style="display:none;font-size:11px">SKU qty exceeds PO open qty — request amendment.</div>
+          <table class="stbl">
+            <thead><tr><th>SKU Code</th><th>PO Open Qty</th><th>Ship Qty</th><th>Variance</th><th></th></tr></thead>
+            <tbody id="s1-skus"><tr><td colspan="5" style="text-align:center;color:var(--faint);padding:12px">Select a PO above to load SKUs</td></tr></tbody>
+          </table>
+          <button class="btn btns" id="add-sku-btn" style="margin-top:8px">+ Add SKU Row</button>
+        </div></div>
+        <div class="card"><div class="ch"><div class="ct">Invoice Upload</div><span class="badge ba">Required after token creation</span></div>
+          <div class="cb" style="padding:8px 12px">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px">A Google Drive folder is auto-created for this token. Upload your invoice PDF there.</div>
+            <div id="s1-drive" class="al ai" style="display:none;font-size:11px"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <button class="btn btnp" id="create-btn">Create Shipment Token</button>
+          <button class="btn btns" id="clear-btn">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scr" id="sc-s2">
+    <div class="ph">
+      <div><div class="pt">Step 2 — Assign Transport Partner</div><div class="ps">Logistics Team — assign partner to all Pickup Pending tokens</div></div>
+      <div class="pa">
+        <button class="btn btns btnp" id="s2t1">Pending Assignment</button>
+        <button class="btn btns" id="s2t2">Calendar View</button>
+      </div>
+    </div>
+    <div id="s2-list"><div class="ld"><div class="sp"></div>Loading...</div></div>
+    <div id="s2-cal" style="display:none">
+      <div class="tc">
+        <div class="card" style="margin-bottom:0"><div id="cal2"></div></div>
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct" id="cal2-title">Select a date</div></div>
+          <div id="cal2-list" style="padding:16px;text-align:center;color:var(--faint);font-size:12px">Click a date</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scr" id="sc-s3">
+    <div class="ph">
+      <div><div class="pt">Step 3 - Pickup &amp; Transit</div><div class="ps">Logistics Partner - confirm pickup details</div></div>
+      <div class="pa">
+        <button class="btn btns btnp" id="s3t1">My Pickups</button>
+        <button class="btn btns" id="s3t2">Schedule</button>
+      </div>
+    </div>
+    <div id="s3-pickups-wrap">
+      <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">
+        <div class="ch">
+          <div class="ct">Pickup Requests</div>
+          <span style="font-size:11px;color:#6b7280">Accept / Reject / Update pickup details below</span>
+        </div>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Token</th><th>Vendor</th><th>Partner</th><th>LR#</th><th>Boxes</th><th>Delivery Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="s3-schedule-body"><tr><td colspan="8" style="text-align:center;padding:16px;color:#9ca3af">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="s3-forms"></div>
+    </div>
+    <div id="s3-cal" style="display:none">
+      <div class="tc">
+        <div class="card" style="margin-bottom:0"><div id="cal3"></div></div>
+        <div class="card" style="margin-bottom:0">
+          <div class="ch"><div class="ct" id="cal3-title">Select a date</div></div>
+          <div id="cal3-list" style="padding:16px;text-align:center;color:var(--faint);font-size:12px">Click a date to see appointments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scr" id="sc-s4">
+    <div class="ph"><div><div class="pt">Step 4 — Gate In</div><div class="ps">Security Team — scan LR number to check vehicle in</div></div></div>
+    <div class="card"><div class="ch"><div class="ct">Vehicle Entry — LR Number Scan</div></div><div class="cb">
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:1;max-width:300px"><label>LR Number</label><input id="s4-lr" placeholder="e.g. LR-MW-56789"></div>
+        <button class="btn btnp" id="gate-in-btn">Look Up &amp; Check In</button>
+      </div>
+      <div id="s4-res"></div>
+    </div></div>
+  </div>
+  <div class="scr" id="sc-s6">
+    <div class="ph"><div><div class="pt">Step 5 — Gate Out</div><div class="ps">Security Team — scan LR number to clear vehicle exit</div></div></div>
+    <div class="card"><div class="ch"><div class="ct">Vehicle Exit — LR Number Scan</div></div><div class="cb">
+      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:1;max-width:300px"><label>LR Number</label><input id="s6-lr" placeholder="e.g. LR-MW-56789"></div>
+        <button class="btn btnp" id="gate-out-btn">Look Up &amp; Clear Exit</button>
+      </div>
+      <div id="s6-res"></div>
+    </div></div>
+  </div>
+  <div class="scr" id="sc-s7">
+    <div class="ph"><div><div class="pt">Step 6 — Upload Documents &amp; Close</div><div class="ps">Warehouse Team</div></div></div>
+    <div id="s7-body"><div class="ld"><div class="sp"></div>Loading...</div></div>
+  </div>
+  <div class="scr" id="sc-master">
+    <div class="ph">
+      <div><div class="pt">Manufacturing Vendors &amp; Logistics Partners</div><div class="ps">Master data</div></div>
+      <div class="pa">
+        <button class="btn btns btnp" id="add-vend-btn">+ Add Vendor</button>
+        <button class="btn btns" id="add-part-btn">+ Add Partner</button>
+      </div>
+    </div>
+    <div id="master-body"><div class="ld"><div class="sp"></div>Loading...</div></div>
+  </div>
+  <div class="scr" id="sc-config">
+  <div class="ph">
+    <div><div class="pt">Configuration</div><div class="ps">Transit ETA · Vehicle Sizes · Drop Locations</div></div>
+  </div>
+  <div id="config-body"><div class="ld"><div class="sp"></div>Loading...</div></div>
+</div>
+<div class="scr" id="sc-users">
+    <div class="ph">
+      <div><div class="pt">User Management</div><div class="ps">Admin only</div></div>
+      <div class="pa"><button class="btn btns btnp" id="add-user-btn">+ Add User</button></div>
+    </div>
+    <div id="add-user-form" style="display:none" class="card">
+      <div class="ch"><div class="ct">Create New User</div><button class="btn btns" id="cancel-user-btn">Cancel</button></div>
+      <div class="cb">
+        <div class="g2">
+          <div class="fg"><label>Full Name</label><input id="nu-name" placeholder="Rahul Sharma"></div>
+          <div class="fg"><label>Google Email</label><input id="nu-email" type="email" placeholder="rahul@mosaicwellness.in"></div>
+          <div class="fg"><label>Role</label>
+            <select id="nu-role">
+              <option value="admin">Admin</option><option value="supply_planning">Supply Planning</option>
+              <option value="logistics_team">Logistics Team</option><option value="logistics_partner">Logistics Partner</option>
+              <option value="security">Security</option><option value="warehouse">Warehouse Team</option>
+              <option value="approver">Approver</option>
+            </select>
+          </div>
+          <div class="fg"><label>Department</label><input id="nu-dept" placeholder="Logistics"></div>
+        </div>
+        <button class="btn btnp" id="save-user-btn">Create &amp; Send Welcome Email</button>
+        <div id="nu-res" style="margin-top:8px"></div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="tw" id="users-body"><div class="ld" style="padding:20px"><div class="sp"></div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="modal" id="vend-modal">
+  <div class="mbox">
+    <div class="mhdr">Add Vendor<button class="btn btns" id="close-vend-btn">&#10005;</button></div>
+    <div class="g2">
+      <div class="fg"><label>Vendor Name *</label><input id="vm-name" placeholder="Himalaya Wellness"></div>
+      <div class="fg"><label>City *</label><input id="vm-city" placeholder="Dehradun"></div>
+    </div>
+    <div class="fg"><label>Address</label><input id="vm-addr" placeholder="Full address"></div>
+    <div class="g2">
+      <div class="fg"><label>Pincode</label><input id="vm-pin" placeholder="248001" maxlength="6"></div>
+      <div class="fg"><label>Default Transit</label><select id="vm-tr"><option>Surface</option><option>Air</option><option>Train</option></select></div>
+    </div>
+    <div class="sdv" style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;padding-bottom:6px;border-bottom:1px solid var(--border);margin:12px 0 8px">POC Details</div>
+    <div class="g2">
+      <div class="fg"><label>POC Name *</label><input id="vm-poc" placeholder="Contact person"></div>
+      <div class="fg"><label>POC Mobile *</label><input id="vm-mob" placeholder="+91 98765 43210"></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>POC Email</label><input id="vm-email" type="email" placeholder="poc@vendor.com"></div>
+      <div class="fg"><label>Preferred LP</label><input id="vm-lp" placeholder="Shree Logistics"></div>
+    </div>
+    <div id="vm-err" class="al ae" style="display:none;font-size:11px"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btnp" id="save-vend-btn">Save Vendor</button>
+      <button class="btn" id="cancel-vend-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="slot-modal">
+  <div class="mbox" style="width:520px">
+    <div class="mhdr">Change Delivery Slot<button class="btn btns" id="close-slot-btn">&#10005;</button></div>
+    <div id="slot-token-info" class="al ai" style="font-size:12px;margin-bottom:12px"></div>
+    <div id="slot-picker-body">
+      <div class="ld"><div class="sp"></div>Loading slots...</div>
+    </div>
+    <div id="slot-result" style="margin-top:8px"></div>
+  </div>
+</div>
+<div class="modal" id="vend-edit-modal">
+  <div class="mbox">
+    <div class="mhdr">Edit Vendor<button class="btn btns" id="close-vend-edit-btn">&#10005;</button></div>
+    <div class="g2">
+      <div class="fg"><label>Vendor Name</label><input id="ve-name" placeholder="Vendor name"></div>
+      <div class="fg"><label>City</label><input id="ve-city" placeholder="City"></div>
+    </div>
+    <div class="fg"><label>Address</label><input id="ve-addr"></div>
+    <div class="g2">
+      <div class="fg"><label>Pincode</label><input id="ve-pin" maxlength="6"></div>
+      <div class="fg"><label>Default Transit</label><select id="ve-tr"><option>Surface</option><option>Air</option><option>Train</option></select></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>POC Name</label><input id="ve-poc"></div>
+      <div class="fg"><label>POC Mobile</label><input id="ve-mob"></div>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>POC Email</label><input id="ve-email" type="email"></div>
+      <div class="fg"><label>Preferred LP</label><input id="ve-lp"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btnp" id="save-vend-edit-btn">Save Changes</button>
+      <button class="btn" id="cancel-vend-edit-btn">Cancel</button>
+      <button class="btn" id="toggle-vend-status" style="margin-left:auto">Disable Vendor</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="part-modal">
+  <div class="mbox" style="width:400px">
+    <div class="mhdr">Add Logistics Partner<button class="btn btns" id="close-part-btn">&#10005;</button></div>
+    <div class="fg"><label>Partner Name *</label><input id="pm-name" placeholder="Shree Logistics"></div>
+    <div class="g2">
+      <div class="fg"><label>Contact</label><input id="pm-cont" placeholder="Contact person"></div>
+      <div class="fg"><label>Mobile</label><input id="pm-mob" placeholder="+91 98001 23456"></div>
+    </div>
+    <div class="fg"><label>Email</label><input id="pm-email" type="email" placeholder="contact@partner.com"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btnp" id="save-part-btn">Save</button>
+      <button class="btn" id="cancel-part-btn">Cancel</button>
+      <button class="btn" id="toggle-partner-status" style="display:none;margin-left:auto">Disable Partner</button>
+    </div>
+  </div>
+</div>
+<script>
+var API  = "https://script.google.com/macros/s/AKfycbxUzRvBkToBnGRY6voW0oMQvV4D9Ub8TA_ML8jfk5j0xETcLOogcZxwnqvvcZ6vumUcpw/exec";
+var LOGO = "data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAA5AJ8DASIAAhEBAxEB/8QAHAABAAIDAQEBAAAAAAAAAAAAAAUGAwQHCAEC/8QAQxAAAQMDAwIDAwcGDgMAAAAAAQIDBAAFEQYSIQcTMUFRFSJhCBQyUnGBoRZCYpGxshcYIzQ2OENVY3J1gpKTosHR/8QAGQEBAAMBAQAAAAAAAAAAAAAAAAECAwQF/8QAKBEAAgICAQIFBAMAAAAAAAAAAAECEQMhEjFBBAUiUcEUMmGhseHw/9oADAMBAAIRAxEAPwD2HSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpVeGtNPHXB0Z89PtkM93tdtW3G3djdjGdvOPShWU4xq31LDSlKFhSlKAVwTr31VvcPUadC6I3i5KKUSH2k7nN6sYabHkcEZPjzgYwa73Xl7pe2iT8q++OPpDimp1xU2Vc7SFqSPwOKtFdzz/ADCc0oY4OuTqzXd6Zdb4kP243e5S5qR3Cw3dVl/1x9Un4bjWoOvut0aWNgVHQb8He18/Lf8AKBPhjt4x3M8Z/DPNd3t18ubvUx+3LkqMTetsNY90BKSR9/FcSkwYn8b75v2Edr2ml3Zjjf2QvP8Ay5qYTU7tHm5cbxJPBNq3xd/yfEdMOttyg+2n71KRKWnuCO7dFpf9cce6k/AkfdWHphqfVU/Vf5F3+fIYuW5TbS5LikKDic5bXjz4OD+3Irul2vlzZ6lR7c3KUmJvbQWgPdIUBnPx5rjPWVCIvyn7G9HSG1uyIC1lPG5XcCc/qAFQmslpjPghiqcG9Onb6nWNN329WLUKLJfVrcacUEAuK3FBP0VBXmKn+qeto+gtNJvcmC7NbVISx221hJyoE5yfsqudTf6Z28/4bf75qO+Vtj+C5kH+8mf3V1nj60d7yTxYsqT+3oYnuvDECahN60ZfLdElsl22urTlcr6oCcDG7I8CcZFTmhOqar7rBWlL3pifp65rZL8duSrd3UgZ9AQcAnzHB9KrnXptH5VdL07E49rITjHlvZ4qZ1NbobnyjNMz1XaM1LRbXAiEW1lx1OHsqCgNo+l4E+R+GdaVELJnjkacrSaXRd/9o3Na9VGbRqVWmNPafn6mvLSd8hmJwlgfpKweeR5Y5HOeKsOkNYwr9Ofs7rK4V7iR2npsFQUrsdwAhO/ABIBGceBNcp0ffLb036u6zi6xcVBTeJPzuFOcbUUONlS1bcgH64+GUkelS2mdSytddcU3DTUiQrS1qiFMl4IKG5D5StI8gVH3+AfAJJ8+TROPxUnJXLbdcfb5/Nk0vq5DMzUK42n7nLtVjcEd6XHTuU6+VhGxCPQckkqHA8Oakuo/Uq3aPRboyLdMul3uQBiW9hOHFA+auCRzxjBJOfQ1xHW9903Z71dNS9PdQXayahTce3Ks7zKtktRV7ygjkYyTwr48DirXra4u6Y606U11qmG4zbZVqTHecCCpMR8pVuGPHgr+3BOM4pxRl9ZkqS5d1vsk29/0ywsdai1fbTYb1oy7Wm6XCUhntSFAJSlaglLgJA3DJOeB4VYRf7EetZ09+T7Xtn2b3vam1O7t/Uzjd+NULqRqLTWstVaVulqvMBNvsVzaVJnvhaUqW4pJSyjCSVKIbUSeEjAyak0/1s1f6FSi6zz5Vy5LkleuhM6q6soh6lkac0tpq46ouMP+diLw2yfqlWDkjwPGM8ZzVs6f6lOq9Opurlsk2t4OrZeiyPptrQcEHw/YK5H0fvlu6f6y1NpTVy1W+4zrl34sp1B2SkKJCfex8cjPHvHzFdg0dqKFqSJNlQoUyImNNciOJks9tS1oxlQHmDkc/D4VDVG3hc0sjuUt79Pt8k5SlKqd4rzB0mIHyq9QgnGZtyx/2Kr0/XnHrN081bYNfq6haEbffU4533W46d7jLpGFnZ+ehXJPB8TnirR9jzvMIy9GRK+Ltl+t6gz1dd7p27n3AM/FJxVSf0LqhXyohqQWtz2OXkyPneR29oYCcf5twxj7/CqlA1zqu8X0ydSacmQ3iEhMmLAeSApPmocn05Hhj7x1OLq3WEmGliPHU6pQwl5MYlZ/9Z+6s03jbTOKGTFl1K9S5IyX59odV2nCtO1EhlKjngHCaq3VfQuqLv180/fLda3H7alUVTskKGxsNObl7vTjkeueKsreg73Jtrs99wJnKVvDK1ZUoeZKvJVZGdQ62gsiAuC8txI2pW5GUpf6/A/bzVYTcW20ayjyTWVNJu9GTqSoO63gNNncsIaSQPIlZ4/EVf78Ld8xSbrEakxu6gEOtBxKSTgKIP2+NU7Relri9dxfr/vDoVvQ259NSvJR9MeQq9XCK3NgvRHhlt5BQr7xUxvbO3BGTUptVZpTXbM9KdTMYjOu21Afy42lRZBycpz4H3fL4V8mToTUeJdXILjjzuG2cMgvDeM7fh4cjNQjWnJ7jURcl0F99wpuKvrtZBA/8Ej/AHGpjVUN2XDjIZjLkBuShxbaHAglIBzg5Hr61Ns0UptN0fm9tWa42Myr5Z25MdrKyzLjJWpPOM7TkCtsptthtCjGiNRYjAz2o7QSBk+QGBWnPhPP6SfhxobjTq2yEMuOhSs5+tk/trJeG5lx03JaTCW1IWnCWlLSScEeYOKm2Wtq3W6PxeLdp2G+rUU20QVSmcEyjGQp1PIGd2M8VsXNdqnsRoc2OxOjTjhCVtpcbXhJVkg8eArFeWply06+ymGtmQ5gBpa0k8KB8QceArWXZZEa+Qnoax8wQ8txbB/slFChlP6JJ8PI+HnRtkSbT0tOjG7F07DWixMaaZcaZUiSGWITZabUSQleOAFcHnFb9zdtsC4NSjbg/cHklCFssJU8UJGT73jgema0bnb3l6lVMVbn5TKmG0IU1IDe1SVKJyNwz4itrUsd6QGQi3GYhO4hTbvbdaX+apKiRx45pbI2k6X6PmpI1hm21qTerTHntgpDTb8VLi9yiAAAocEkipK3PIfiIWiO7HAyntuI2lOOMY/+VoSo81WnmI8mM1cHglAkNqVjfjG4pPHveY8Ky6cYlsW9SJfcSS6otIcc3qbbz7qSrzP3mluy8W+fTsSVKUqTUUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgP//Z";
+document.getElementById("logo-img").src = LOGO;
+
+// -- FETCH API -------------------------------------------------------------
+function get(params, cb) {
+  var url = API + "?" + Object.keys(params).map(function(k) {
+    return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+  }).join("&");
+  apiFetch(url, cb);
+}
+function post(action, data, cb) {
+  var url = API + "?action=" + encodeURIComponent(action) +
+    "&data=" + encodeURIComponent(JSON.stringify(data));
+  apiFetch(url, cb);
+}
+function apiFetch(url, cb) {
+  fetch(url, { method: "GET", redirect: "follow" })
+    .then(function(r) { return r.text(); })
+    .then(function(txt) {
+      try {
+        var t = txt.trim();
+        // Strip JSONP wrapper if present
+        var s = t.indexOf("{"); var a = t.indexOf("[");
+        var start = (s===-1)?a:(a===-1)?s:Math.min(s,a);
+        if (start > 0) { var end = (t.charAt(start)==="{") ? t.lastIndexOf("}") : t.lastIndexOf("]"); t = t.slice(start, end+1); }
+        cb(JSON.parse(t));
+      } catch(e) { cb({ error: "Parse error: " + txt.slice(0, 80) }); }
+    })
+    .catch(function(e) { cb({ error: "Connection failed: " + e.message }); });
+}
+
+// -- ROLES -----------------------------------------------------------------
+var ROLES = {
+  admin:{label:"Admin",color:"#2563EB"},
+  supply_planning:{label:"Supply Planning",color:"#0D9488"},
+  logistics_team:{label:"Logistics Team",color:"#7C3AED"},
+  logistics_partner:{label:"Logistics Partner",color:"#EA580C"},
+  security:{label:"Security",color:"#DC2626"},
+  warehouse:{label:"Warehouse Team",color:"#16A34A"},
+  approver:{label:"Approver",color:"#D97706"}
+};
+var ROLE_STEPS = {
+  admin:"all",
+  supply_planning:["s1","reg","master","dash"],
+  logistics_team:["s2","reg","dash"],
+  logistics_partner:["s3","dash"],
+  security:["s4","s6","dash"],
+  warehouse:["s7","dash"]
+};
+var USER = { name:"Admin", role:"admin", email:"admin@mosaicwellness.in" };
+var allTokens = [];
+var vendorCache = [];
+var partnerCache = [];
+var calState = {};
+
+// -- NAV -------------------------------------------------------------------
+document.querySelectorAll(".ni").forEach(function(el) {
+  el.addEventListener("click", function() {
+    var s = this.getAttribute("data-s");
+    document.querySelectorAll(".ni").forEach(function(n) { n.classList.remove("on"); });
+    this.classList.add("on");
+    document.querySelectorAll(".scr").forEach(function(sc) { sc.classList.remove("on"); });
+    document.getElementById("sc-" + s).classList.add("on");
+    onScreen(s);
+  });
+});
+function goTo(s) { var el = document.querySelector('[data-s="' + s + '"]'); if (el) el.click(); }
+function onScreen(s) {
+  var fn = { dash:loadDash, reg:loadReg, s1:loadS1, s2:loadS2, s3:loadS3, s4:loadS4, s6:loadS6, s7:loadS7, master:loadMaster, config:loadConfig, users:loadUsers };
+  if (fn[s]) fn[s]();
+}
+document.getElementById("refresh-btn").addEventListener("click", function() {
+  var a = document.querySelector(".ni.on"); if (a) onScreen(a.getAttribute("data-s"));
+});
+
+// -- USER / ROLE -----------------------------------------------------------
+function setUser(u) {
+  USER = u;
+  var role = ROLES[u.role] || ROLES.admin;
+  var initials = u.name.split(" ").map(function(w){return w[0]||"";}).join("").toUpperCase().slice(0,2);
+  document.getElementById("av").textContent = initials;
+  document.getElementById("av").style.background = role.color;
+  document.getElementById("uname").textContent = u.name;
+  document.getElementById("urole").textContent = role.label;
+  var allowed = ROLE_STEPS[u.role];
+  document.querySelectorAll(".ni[data-r]").forEach(function(el) {
+    var rs = el.getAttribute("data-r");
+    if (rs==="all"||u.role==="admin") { el.classList.remove("hide"); return; }
+    var steps = Array.isArray(allowed) ? allowed : [];
+    el.classList.toggle("hide", steps.indexOf(el.getAttribute("data-s"))===-1);
+  });
+  var rp = document.getElementById("role-inner");
+  if (u.role === "admin") {
+    var sel = document.createElement("select"); sel.className = "rs";
+    Object.keys(ROLES).forEach(function(k) {
+      var o = document.createElement("option"); o.value=k; o.textContent=ROLES[k].label;
+      if (k===u.role) o.selected=true; sel.appendChild(o);
+    });
+    sel.addEventListener("change", function() { USER.role=this.value; setUser(USER); goTo("dash"); });
+    rp.innerHTML = ""; rp.appendChild(sel);
+  } else {
+    rp.innerHTML = '<div class="rf"><div class="rdot" style="background:'+role.color+'"></div>'+role.label+'</div>';
+  }
+}
+
+// -- HELPERS ---------------------------------------------------------------
+function sb(s) {
+  var m = {"Pickup Pending":"bb","Pending Approval":"ba","Partner Assigned":"bt","Partner Accepted":"bt",
+    "In-Transit":"bp","Arrived at Warehouse":"ba","Vehicle Exited":"bx","Closed":"bg",
+    "Rejected":"br","Rejected by Partner":"br"};
+  return '<span class="badge '+(m[s]||"bx")+'">'+(s||"-")+"</span>";
+}
+function el(id) { return document.getElementById(id); }
+function html(id, h) { var e=el(id); if(e) e.innerHTML=h; }
+function spin(id) { html(id,'<div class="ld"><div class="sp"></div>Loading...</div>'); }
+
+// -- DASHBOARD -------------------------------------------------------------
+function loadDash() {
+  html("sc-dash",'<div class="ld"><div class="sp"></div>Loading...</div>');
+  get({ action:"dash" }, function(d) {
+    if (d.error) {
+      html("sc-dash",'<div style="padding:30px;text-align:center"><div style="font-size:14px;font-weight:600;color:var(--red);margin-bottom:8px">Cannot connect to backend</div><div style="font-size:12px;color:var(--muted);margin-bottom:16px">'+d.error+'</div><a href="'+API+'?action=ping" target="_blank" class="btn btnp btns">Test Backend</a></div>');
+      return;
+    }
+    el("sync-txt").textContent = d.updated || "Connected";
+    el("sync-txt").style.color = "#4ade80";
+    var c = d.counts || {};
+    var div = document.createElement("div");
+    div.innerHTML =
+      '<div class="ph"><div><div class="pt">Control Tower</div><div class="ps">Live - all teams</div></div></div>' +
+      '<div class="krow">' +
+      kpi("Active Tokens",(c.s1||0)+(c.s2||0)+(c.s3||0)+(c.s4||0),"across all steps","var(--blue)")+
+      kpi("Pending Approval",c.approval||0,"transit approvals","var(--amber)")+
+      kpi("Arrived",c.s4||0,"at warehouse","var(--green)")+
+      kpi("Partner Pending",c.partnerPending||0,"awaiting accept/reject","var(--purple)")+
+      '</div>'+
+      '<div class="brow" id="brow"></div>'+
+      '<div class="tc">'+
+      '<div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Dock Status - Docks 13-19</div></div><div class="cb"><div class="drow">'+
+      [13,14,15,16,17,18,19].map(function(n,i){var cls=["dfr","dbu","dbu","dfr","dbf","dbu","dfr"][i];var lbl=["Free","In Use","In Use","Free","Buffer","In Use","Free"][i];return'<div class="dk '+cls+'">'+n+'<span>'+lbl+'</span></div>';}).join("")+
+      '</div></div></div>'+
+      '<div class="card" style="margin-bottom:0"><div class="ch"><div class="ct">Recent Shipments</div><span class="badge bx" id="rec-cnt">-</span></div>'+
+      '<div class="tw" id="rec-tbl"><div class="ld" style="padding:12px"><div class="sp"></div></div></div>'+
+      '</div></div>';
+    el("sc-dash").innerHTML=""; el("sc-dash").appendChild(div);
+    var steps=[
+      {n:c.s1,l:"Create Shipment",c:"var(--blue)",s:"s1"},
+      {n:c.s2,l:"Assign Partner",c:"var(--teal)",s:"s2"},
+      {n:c.s3,l:"Pickup & Transit",c:"var(--purple)",s:"s3"},
+      {n:c.s4,l:"Gate In",c:"var(--amber)",s:"s4"},
+      {n:c.s6,l:"Gate Out",c:"var(--red)",s:"s6"},
+      {n:c.s7,l:"Upload & Close",c:"var(--green)",s:"s7"}
+    ];
+    var brow=el("brow");
+    if(brow) steps.forEach(function(step,i){
+      var b=document.createElement("div"); b.className="bkt"; b.style.borderTopColor=step.c;
+      b.dataset.goto=step.s;
+      b.innerHTML='<div class="bn" style="color:'+step.c+'">'+(step.n||0)+'</div><div class="bl">Step '+(i+1)+'<br>'+step.l+'</div>';
+      b.addEventListener("click",function(){goTo(this.dataset.goto);}); brow.appendChild(b);
+    });
+    get({action:"tokens"},function(rows){
+      allTokens=Array.isArray(rows)?rows:[];
+      var cnt=el("rec-cnt"); if(cnt) cnt.textContent=allTokens.length+" total";
+      var tbl=el("rec-tbl"); if(!tbl) return;
+      if(!allTokens.length){tbl.innerHTML='<div style="padding:16px;text-align:center;color:var(--faint)">No shipments yet</div>';return;}
+      tbl.innerHTML='<table><thead><tr><th>Token</th><th>Vendor</th><th>Boxes</th><th>Status</th></tr></thead><tbody>'+
+        allTokens.slice(0,8).map(function(r){return'<tr><td class="mono">'+r.id+'</td><td>'+r.vendor+'</td><td>'+r.boxes+'</td><td>'+sb(r.status)+'</td></tr>';}).join("")+'</tbody></table>';
+    });
+  });
+}
+function kpi(l,v,s,c){return'<div class="kpi" style="border-left-color:'+c+'"><div class="kl">'+l+'</div><div class="kv" style="color:'+c+'">'+v+'</div><div class="ks">'+s+'</div></div>';}
+
+// -- REGISTER --------------------------------------------------------------
+function loadReg() {
+  var step=el("reg-step").value; spin("reg-body");
+  var p={action:"tokens"}; if(step) p.step=step;
+  get(p,function(rows){
+    if(!Array.isArray(rows)||!rows.length){html("reg-body",'<div style="padding:20px;text-align:center;color:var(--faint)">No records</div>');return;}
+    html("reg-body",'<table><thead><tr><th>Token</th><th>PO#</th><th>Invoice#</th><th>Vendor</th><th>Transit</th><th>Vehicle#</th><th>LR#</th><th>Pickup</th><th>Boxes</th><th>Drop</th><th>Partner</th><th>Status</th></tr></thead><tbody>'+
+      rows.map(function(r){var trBadge=r.transit==="Air"?'<span class="badge ba">Air</span>':r.transit==="Train"?'<span class="badge bp">Train</span>':'<span class="badge bt">Surface</span>';return'<tr><td class="mono" style="font-size:10px">'+r.id+'</td><td class="mono" style="font-size:10px">'+r.po+'</td><td class="mono" style="font-size:10px">'+r.invoice+'</td><td style="font-weight:500">'+r.vendor+'</td><td>'+trBadge+'</td><td class="mono" style="font-size:10px">'+r.vehicle+'</td><td class="mono" style="font-size:10px">'+r.lr+'</td><td style="font-size:11px">'+r.pickupDate+'</td><td style="font-weight:600">'+r.boxes+'</td><td>'+r.drop+'</td><td style="font-size:11px">'+r.partner+'</td><td>'+sb(r.status)+'</td></tr>';}).join("")+'</tbody></table>');
+  });
+}
+el("reg-step").addEventListener("change",loadReg);
+el("export-btn").addEventListener("click",function(){
+  var rows=document.querySelectorAll("#reg-body tr");
+  var csv=Array.from(rows).map(function(r){return Array.from(r.cells).map(function(c){return'"'+c.textContent.trim()+'"';}).join(",");}).join("\n");
+  var a=document.createElement("a"); a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
+  a.download="WODMS_"+new Date().toISOString().split("T")[0]+".csv"; a.click();
+});
+
+// -- STEP 1 ----------------------------------------------------------------
+function loadS1() {
+  loadDropLocations();
+  get({action:"vendors"},function(vs){
+    if(!Array.isArray(vs)) return; vendorCache=vs;
+    var s=el("s1-vend"); s.innerHTML='<option value="">Select vendor...</option>';
+    vs.forEach(function(v){var o=document.createElement("option");o.value=v.code;o.textContent=v.name;o.dataset.poc=v.pocName||"";o.dataset.mob=v.pocMobile||"";s.appendChild(o);});
+  });
+  loadPO();
+}
+function loadDropLocations(){get({action:"dropConfig"},function(cfg){var rrow=el("r-drop");if(!rrow)return;var drops=Array.isArray(cfg)&&cfg.length?cfg.filter(function(d){return(d.active||"Active")!=="Inactive";}):[{name:"Aramex"},{name:"Servicelink"}];if(!drops.length)drops=[{name:"Aramex"},{name:"Servicelink"}];rrow.innerHTML=drops.map(function(d,i){return"<div class=\"ro"+(i===0?" on":"")+" d-loc\" data-v=\""+d.name+"\"><div class=\"rc\"><div class=\"ri\"></div></div>"+d.name+"</div>";}).join("");});}
+function loadPO() {
+  loadVehicleConfig();
+  get({action:"po"},function(d){
+    if(d.error) return;
+    el("po-sync-time").textContent=d.lastSync||"-";
+    var s=el("s1-po"); s.innerHTML='<option value="">Select PO...</option>';
+    var map={};
+    (d.pos||[]).forEach(function(p){map[p.po]=map[p.po]||[];map[p.po].push(p);});
+    Object.keys(map).forEach(function(po){var o=document.createElement("option");o.value=po;o.textContent=po;o.dataset.skus=JSON.stringify(map[po]);s.appendChild(o);});
+  });
+}
+document.querySelectorAll(".rrow").forEach(function(row){
+  row.addEventListener("click",function(e){
+    var ro=e.target.closest(".ro"); if(!ro) return;
+    row.querySelectorAll(".ro").forEach(function(r){r.classList.remove("on");}); ro.classList.add("on");
+    if(row.id==="r-pt"||row.id==="r-tr") checkApproval();
+  });
+});
+function getR(id){var s=document.querySelector("#"+id+" .ro.on");return s?s.getAttribute("data-v"):"";}
+function checkApproval(){
+  var tr=getR("r-tr"),pt=getR("r-pt"),b=el("s1-appr");
+  if((tr==="Air"||tr==="Train")&&pt){
+    var nm=pt==="NPD"?"Abhinav Gupta":"Manan Shah";
+    b.textContent="Approval required - email will be sent to "+nm+" ("+tr+" transit for "+pt+")";
+    b.style.display="block";
+  } else {b.style.display="none";}
+}
+el("s1-vend").addEventListener("change",function(){
+  var o=this.options[this.selectedIndex];
+  el("s1-poc").value=o.dataset.poc||""; el("s1-mob").value=o.dataset.mob||"";
+});
+el("s1-po").addEventListener("change",function(){
+  var o=this.options[this.selectedIndex]; if(!o||!o.dataset.skus) return;
+  var skus=JSON.parse(o.dataset.skus),tb=el("s1-skus"); tb.innerHTML="";
+  skus.forEach(function(sk){
+    var tr=document.createElement("tr");
+    tr.innerHTML='<td class="mono" style="font-size:11px">'+sk.sku+'</td>'+
+      '<td style="font-weight:600;color:var(--blue);text-align:right">'+sk.qty+'</td>'+
+      '<td><input type="number" value="'+sk.qty+'" class="sku-ship-qty" data-pq="'+sk.qty+'" data-sku="'+sk.sku+'" data-po="'+sk.po+'"></td>'+
+      '<td class="sku-var" style="color:var(--muted)">-</td><td></td>';
+    tb.appendChild(tr);
+  });
+});
+var vehicleConfigCache = [];
+el("s1-boxes").addEventListener("input",suggestVehicle);
+el("s1-wt").addEventListener("input",suggestVehicle);
+function suggestVehicle(){
+  var b=parseInt(el("s1-boxes").value)||0,w=parseFloat(el("s1-wt").value)||0;
+  if(!b&&!w) return;
+  // Use config if loaded, else defaults
+  var cfg=vehicleConfigCache.length?vehicleConfigCache:[
+    {size:"14 feet",maxBoxes:100,maxWT:1.5},
+    {size:"20 feet",maxBoxes:300,maxWT:3.5},
+    {size:"24 feet",maxBoxes:600,maxWT:7},
+    {size:"32 feet",maxBoxes:99999,maxWT:99999}
+  ];
+  for(var i=0;i<cfg.length;i++){
+    if(b<=cfg[i].maxBoxes&&w<=cfg[i].maxWT){el("s1-vsz").value=cfg[i].size;return;}
+  }
+  el("s1-vsz").value=cfg[cfg.length-1].size;
+}
+function loadVehicleConfig(){
+  get({action:"vehicleConfig"},function(d){
+    if(Array.isArray(d)) vehicleConfigCache=d;
+  });
+}
+el("po-sync-btn").addEventListener("click",loadPO);
+el("s1-skus").addEventListener("input",function(e){
+  if(!e.target.classList.contains("sku-ship-qty")) return;
+  var pq=parseInt(e.target.dataset.pq)||0,v=parseInt(e.target.value)||0;
+  var row=e.target.closest("tr"); if(!row) return;
+  var td=row.querySelector(".sku-var"); if(!td) return;
+  if(pq===0){td.textContent="-";td.style.color="var(--muted)";return;}
+  var d=v-pq;
+  if(d>0){td.textContent="+"+d+" EXCEEDS";td.style.color="var(--red)";}
+  else if(d<0){td.textContent=d+" (partial)";td.style.color="var(--teal)";}
+  else{td.textContent="Exact";td.style.color="var(--green)";}
+});
+el("add-sku-btn").addEventListener("click",function(){
+  var tb=el("s1-skus"),tr=document.createElement("tr"),po=el("s1-po").value||"";
+  var skuInp=document.createElement("input"); skuInp.placeholder="SKU Code";skuInp.style.width="130px";skuInp.className="man-sku";
+  var pqCell=document.createElement("span"); pqCell.textContent="-";pqCell.className="man-pq";pqCell.style.color="var(--faint)";pqCell.style.textAlign="right";pqCell.style.display="block";
+  var sqInp=document.createElement("input"); sqInp.type="number";sqInp.placeholder="0";sqInp.style.width="80px";sqInp.className="sku-ship-qty";sqInp.dataset.pq="0";sqInp.dataset.po=po;
+  var varCell=document.createElement("span"); varCell.textContent="-";varCell.className="sku-var";varCell.style.color="var(--muted)";
+  function lookup(){
+    var sku=skuInp.value.trim().toUpperCase(); if(!sku) return;
+    pqCell.textContent="...";pqCell.style.color="var(--faint)";
+    get({action:"po"},function(d){
+      var match=null;
+      (d.pos||[]).forEach(function(p){if(String(p.sku).trim().toUpperCase()===sku&&(po?String(p.po).trim()===po:true)){ if(!match||p.qty>match.qty) match=p;}});
+      if(match){pqCell.textContent=match.qty;pqCell.style.color="var(--green)";pqCell.style.fontWeight="600";if(!sqInp.value||sqInp.value==="0"||sqInp.dataset.autoFilled==="true"){sqInp.value=match.qty;sqInp.dataset.autoFilled="true";}sqInp.dataset.pq=match.qty;sqInp.dataset.sku=sku;sqInp.dataset.po=match.po||po;var sv=parseInt(sqInp.value)||0,pv=parseInt(match.qty)||0,dv=sv-pv;if(dv>0){varCell.textContent="+"+dv+" EXCEEDS";varCell.style.color="var(--red)";}else if(dv<0){varCell.textContent=dv+" (partial)";varCell.style.color="var(--teal)";}else{varCell.textContent="Exact";varCell.style.color="var(--green)";}sqInp.addEventListener("input",function(){sqInp.dataset.autoFilled="false";},{once:true});}else{pqCell.textContent="Not found";pqCell.style.color="var(--red)";}
+    });
+  }
+  skuInp.addEventListener("blur",lookup);
+  var td1=document.createElement("td");td1.appendChild(skuInp);
+  var td2=document.createElement("td");td2.style.textAlign="right";td2.appendChild(pqCell);
+  var td3=document.createElement("td");td3.appendChild(sqInp);
+  var td4=document.createElement("td");td4.appendChild(varCell);
+  var td5=document.createElement("td");var del=document.createElement("button");del.className="btn btns";del.textContent="x";del.style.padding="2px 6px";
+  del.addEventListener("click",function(){if(tr.parentNode)tr.parentNode.removeChild(tr);});td5.appendChild(del);
+  [td1,td2,td3,td4,td5].forEach(function(td){tr.appendChild(td);}); tb.appendChild(tr);
+});
+el("create-btn").addEventListener("click",function(){
+  var vnd=el("s1-vend"); if(!vnd.value){alert("Select a vendor.");return;}
+  var boxes=parseInt(el("s1-boxes").value)||0; if(!boxes){alert("Enter number of boxes.");return;}
+  var skus=[],exceeded=[];
+  document.querySelectorAll("#s1-skus tr").forEach(function(tr){
+    var sqInp=tr.querySelector(".sku-ship-qty"),manSku=tr.querySelector(".man-sku");
+    var poVal,skuVal,pqVal,sqVal;
+    if(manSku&&sqInp){skuVal=manSku.value.trim().toUpperCase();poVal=sqInp.dataset.po||el("s1-po").value||"";pqVal=parseInt(sqInp.dataset.pq)||0;sqVal=parseInt(sqInp.value)||0;}
+    else if(sqInp){poVal=sqInp.dataset.po||el("s1-po").value||"";skuVal=sqInp.dataset.sku||"";pqVal=parseInt(sqInp.dataset.pq)||0;sqVal=parseInt(sqInp.value)||0;}
+    else{return;}
+    if(!skuVal) return;
+    skus.push({po:poVal,sku:skuVal,poQty:pqVal,shipQty:sqVal});
+    if(pqVal>0&&sqVal>pqVal) exceeded.push(skuVal+" (ship "+sqVal+" > PO open "+pqVal+")");
+  });
+  if(exceeded.length>0){alert("Token blocked - PO qty exceeded:\n\n"+exceeded.map(function(e){return"* "+e;}).join("\n")+"\n\nReduce Ship Qty or request a PO amendment.");return;}
+  var btn=this;btn.textContent="Creating...";btn.disabled=true;
+  post("createToken",{vendor:vnd.options[vnd.selectedIndex].text,pocName:el("s1-poc").value,pocMobile:el("s1-mob").value,drop:getR("r-drop"),productType:getR("r-pt"),transit:getR("r-tr"),boxes:boxes,weightMT:el("s1-wt").value,po:el("s1-po").value,invoice:el("s1-inv").value,skus:skus,createdBy:USER.name},function(res){
+    btn.textContent="Create Shipment Token";btn.disabled=false;
+    if(res.error){alert("Error: "+res.error);return;}
+    if(res.blocked){alert("Token blocked:\n\n"+(res.errors||[]).join("\n"));return;}
+    var ok=el("s1-ok");ok.textContent="Token "+res.id+" created - Status: "+res.status;ok.style.display="block";
+    if(res.driveUrl){var d=el("s1-drive");d.style.display="block";var a=document.createElement("a");a.href=res.driveUrl;a.target="_blank";a.style.color="var(--blue)";a.textContent="Open Drive folder - upload invoice here";d.innerHTML="<b>Folder ready:</b> ";d.appendChild(a);}
+    setTimeout(function(){ok.style.display="none";},8000);
+    loadReg();
+  });
+});
+el("clear-btn").addEventListener("click",function(){
+  el("s1-vend").selectedIndex=0;
+  ["s1-poc","s1-mob","s1-boxes","s1-wt","s1-vsz","s1-inv"].forEach(function(id){el(id).value="";});
+  el("s1-skus").innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--faint);padding:12px">Select a PO above to load SKUs</td></tr>';
+  el("s1-appr").style.display="none"; el("s1-po-err").style.display="none"; el("s1-drive").style.display="none";
+});
+
+// -- STEP 2 ----------------------------------------------------------------
+function loadS2(){
+  get({action:"partners"},function(ps){if(Array.isArray(ps))partnerCache=ps;});
+  get({action:"tokens",step:"2"},function(rows){
+    var c=el("s2-list"); c.innerHTML="";
+    if(!Array.isArray(rows)||!rows.length){c.innerHTML='<div class="al ai">No tokens yet. Create a shipment in Step 1.</div>';return;}
+    // Sort: Pickup Pending first, then others
+    rows.sort(function(a,b){
+      var order={"Pickup Pending":0,"Rejected by Partner":1,"Rejected":2,"Partner Assigned":3,"Partner Accepted":4,"In-Transit":5,"Pending Approval":6};
+      return (order[a.status]||9)-(order[b.status]||9);
+    });
+    rows.forEach(function(t){
+      var div=document.createElement("div"); div.className="tok"; div.id="tk-"+t.id;
+      var hasPt=t.partner&&t.partner!==""&&t.partner!=="undefined";
+      var actionHtml;
+      if(t.status==="Pending Approval"){
+        actionHtml='<span class="badge ba" style="font-size:10px">Awaiting Transit Approval</span>';
+      } else if(t.status==="Rejected"){
+        actionHtml='<span class="badge br">Rejected</span>';
+      } else if(hasPt&&(t.status==="Partner Assigned"||t.status==="Partner Accepted"||t.status==="In-Transit")){
+        // Already assigned - show partner + option to reassign
+        actionHtml=sb(t.status)+' <span class="badge bt" style="margin-left:4px">'+t.partner+'</span>'+
+          '<select style="width:140px;font-size:11px;margin-left:6px" class="lp-sel"><option value="">Reassign...</option>'+
+          partnerCache.map(function(p){return'<option value="'+p.name+'">'+p.name+'</option>';}).join("")+
+          '</select><button class="btn btns assign-btn" data-tid="'+t.id+'">-></button>';
+      } else {
+        // Needs assignment (Pickup Pending or Rejected by Partner)
+        actionHtml=sb(t.status)+
+          '<select style="width:160px;font-size:11px;margin-left:6px" class="lp-sel"><option value="">Select partner...</option>'+
+          partnerCache.map(function(p){return'<option value="'+p.name+'">'+p.name+'</option>';}).join("")+
+          '</select><button class="btn btnp btns assign-btn" data-tid="'+t.id+'">Assign</button>';
+      }
+      div.innerHTML='<div style="flex:1"><div class="tid">'+t.id+'</div>'+ 
+        '<div class="ttl2">'+t.vendor+' - '+t.boxes+' boxes | '+t.productType+' | '+t.transit+'</div>'+ 
+        '<div class="tmt">Drop: '+t.drop+' | Created: '+t.createdAt+(hasPt?' | Partner: <b>'+t.partner+'</b>':'')+'</div></div>'+ 
+        '<div class="tac" style="flex-shrink:0">'+actionHtml+'</div>';
+      c.appendChild(div);
+    });
+    c.addEventListener("click",function(e){
+      var btn=e.target.closest(".assign-btn"); if(!btn) return;
+      var tid=btn.dataset.tid,sel=btn.previousElementSibling;
+      if(!sel||!sel.value){alert("Select a partner.");return;}
+      btn.textContent="Assigning...";btn.disabled=true;
+      post("assignPartner",{id:tid,partner:sel.value},function(res){
+        if(res.error){alert(res.error);btn.textContent="Assign";btn.disabled=false;return;}
+        var card=el("tk-"+tid); if(card){card.style.opacity=".4";card.querySelector(".tac").innerHTML='<span class="badge bt">Assigned: '+sel.value+'</span>';}
+      });
+    });
+  });
+  get({action:"tokens"},function(rows){if(Array.isArray(rows))allTokens=rows;buildCal("cal2",new Date(),allTokens,function(d,m,y){calDayClick(d,m,y,"cal2-title","cal2-list");});});
+}
+el("s2t1").addEventListener("click",function(){s2tab("list");});
+el("s2t2").addEventListener("click",function(){s2tab("cal");});
+function s2tab(t){el("s2-list").style.display=t==="list"?"block":"none";el("s2-cal").style.display=t==="cal"?"block":"none";el("s2t1").className="btn btns"+(t==="list"?" btnp":"");el("s2t2").className="btn btns"+(t==="cal"?" btnp":"");}
+
+// -- STEP 3 ----------------------------------------------------------------
+function loadS3(){
+  get({action:"tokens",step:"3"},function(rows){
+    if(!Array.isArray(rows)) rows=[];
+    // Populate schedule table
+    var sched=el("s3-schedule-body");
+    if(!sched) return;
+    if(!rows.length){
+      sched.innerHTML="<tr><td colspan='8' style='text-align:center;padding:16px;color:#9ca3af'>No active pickup requests</td></tr>";
+    } else {
+      var sorted=rows.slice().sort(function(a,b){
+        var ord={"Partner Assigned":0,"Rejected by Partner":1,"Partner Accepted":2,"In-Transit":3};
+        return (ord[a.status]||9)-(ord[b.status]||9);
+      });
+      sched.innerHTML=sorted.map(function(t){
+        var sc={"Partner Assigned":"#d97706","Partner Accepted":"#0d9488","In-Transit":"#7c3aed","Rejected by Partner":"#dc2626"}[t.status]||"#6b7280";
+        var sb2={"Partner Assigned":"#fffbeb","Partner Accepted":"#f0fdfa","In-Transit":"#f5f3ff","Rejected by Partner":"#fef2f2"}[t.status]||"#f3f4f6";
+        var act="";
+        if(t.status==="Partner Assigned"){
+          act="<button class='btn btns s3-accept-btn' data-id='"+t.id+"' data-partner='"+t.partner+"' style='background:#0d9488;color:#fff;border-color:#0d9488'>Accept</button> "+
+              "<button class='btn btns s3-reject-btn' data-id='"+t.id+"' data-partner='"+t.partner+"' style='background:#dc2626;color:#fff;border-color:#dc2626'>Reject</button>";
+        } else if(t.status==="Partner Accepted"){
+          act="<button class='btn btns s3-update-btn' data-id='"+t.id+"' style='background:#2563eb;color:#fff;border-color:#2563eb'>Update Pickup</button>";
+        } else if(t.status==="Rejected by Partner"){
+          act="<span style='font-size:10px;color:#dc2626'>Awaiting reassignment</span>";
+        } else if(t.status==="In-Transit"){
+          act="<span style='font-size:10px;color:#7c3aed;font-weight:600'>In Transit</span>";
+        }
+        return "<tr><td style='font-family:monospace;font-size:10px'>"+t.id+"</td>"+
+          "<td style='font-weight:500'>"+t.vendor+"</td>"+
+          "<td style='font-size:11px'>"+t.partner+"</td>"+
+          "<td style='font-family:monospace;font-size:11px'>"+(t.lr||"-")+"</td>"+
+          "<td>"+t.boxes+"</td>"+
+          "<td style='font-size:11px'>"+(t.deliveryDate||"-")+"</td>"+
+          "<td><span style='font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:"+sb2+";color:"+sc+"'>"+t.status+"</span></td>"+
+          "<td>"+act+"</td></tr>";
+      }).join("");
+    }
+    // Build pickup forms for accepted tokens
+    var forms=el("s3-forms");
+    if(forms){
+      forms.innerHTML="";
+      rows.filter(function(t){return t.status==="Partner Accepted";}).forEach(function(t){
+        var div=document.createElement("div");
+        div.className="card"; div.id="s3form-"+t.id; div.style.display="none";
+        div.innerHTML="<div class='ch'><div class='ct'>"+t.id+" - "+t.vendor+"</div>"+
+          "<span style='font-size:11px;font-weight:600;color:#0d9488'>Partner Accepted</span></div>"+
+          "<div class='cb'><div class='g3'>"+
+          "<div class='fg' style='margin-bottom:0'><label>LR #</label><input id='lr-"+t.id+"' value='"+(t.lr||"")+"'></div>"+
+          "<div class='fg' style='margin-bottom:0'><label>Invoice #</label><input id='inv-"+t.id+"' value='"+(t.invoice||"")+"'></div>"+
+          "<div class='fg' style='margin-bottom:0'><label>EWB #</label><input id='ewb-"+t.id+"' value='"+(t.ewb||"")+"'></div>"+
+          "<div class='fg' style='margin-bottom:0'><label>Actual Boxes</label><input type='number' id='bx-"+t.id+"' value='"+t.boxes+"'></div>"+
+          "<div class='fg' style='margin-bottom:0'><label>Pickup Date</label><input type='date' id='pd-"+t.id+"' class='pd-inp' data-tid='"+t.id+"'></div>"+
+          "<div class='fg' style='margin-bottom:0'><label>Vehicle #</label><input id='vn-"+t.id+"' value='"+(t.vehicle||"")+"'></div>"+
+          "</div>"+
+          "<div id='del-"+t.id+"' style='display:none;margin-top:6px;padding:8px;background:#f0fdf4;border-radius:6px;font-size:11px;color:#166534'></div>"+
+          "<div style='margin-top:8px;display:flex;gap:6px'>"+
+          "<button class='btn btnp btns s3-pickup-btn' data-tid='"+t.id+"'>Submit Pickup Details</button>"+
+          "<button class='btn btns s3-close-form' data-tid='"+t.id+"'>Close</button>"+
+          "</div></div>";
+        forms.appendChild(div);
+      });
+    }
+    allTokens=rows;
+  });
+}el("s3t1").addEventListener("click",function(){s3tab("list");});
+el("s3t2").addEventListener("click",function(){s3tab("cal");});
+
+// Step 3 event delegation
+document.addEventListener("click",function(ev3){
+  var ab=ev3.target.closest(".s3-accept-btn");
+  if(ab){
+    if(!confirm("Accept assignment for "+ab.dataset.id+"?")) return;
+    ab.textContent="Accepting..."; ab.disabled=true;
+    post("partnerAcceptApp",{tokenId:ab.dataset.id,partner:ab.dataset.partner},function(res){
+      if(res.error){alert(res.error);ab.textContent="Accept";ab.disabled=false;return;}
+      loadS3();
+    }); return;
+  }
+  var rb2=ev3.target.closest(".s3-reject-btn");
+  if(rb2){
+    var rsn=prompt("Reason for rejection (optional):")||"";
+    post("partnerRejectApp",{tokenId:rb2.dataset.id,partner:rb2.dataset.partner,reason:rsn},function(res){
+      if(res.error){alert(res.error);return;}
+      loadS3();
+    }); return;
+  }
+  var ub=ev3.target.closest(".s3-update-btn");
+  if(ub){
+    document.querySelectorAll("[id^='s3form-']").forEach(function(f){f.style.display="none";});
+    var frm=el("s3form-"+ub.dataset.id);
+    if(frm){frm.style.display="block";frm.scrollIntoView({behavior:"smooth",block:"nearest"});}
+    return;
+  }
+  var cf=ev3.target.closest(".s3-close-form");
+  if(cf){var frm2=el("s3form-"+cf.dataset.tid);if(frm2)frm2.style.display="none";return;}
+  var pb=ev3.target.closest(".s3-pickup-btn");
+  if(pb){
+    var tid=pb.dataset.tid;
+    var lrv=(el("lr-"+tid)||{value:""}).value;
+    var pdv=(el("pd-"+tid)||{value:""}).value;
+    var vnv=(el("vn-"+tid)||{value:""}).value;
+    if(!lrv){alert("Enter LR number.");return;}
+    if(!pdv){alert("Enter Pickup Date.");return;}
+    if(!vnv){alert("Enter Vehicle number.");return;}
+    pb.textContent="Submitting..."; pb.disabled=true;
+    post("confirmPickup",{id:tid,lr:lrv,invoice:(el("inv-"+tid)||{value:""}).value,ewb:(el("ewb-"+tid)||{value:""}).value,boxes:(el("bx-"+tid)||{value:""}).value,pickupDate:pdv,vehicle:vnv},function(res){
+      if(res.error){alert("Error: "+res.error);pb.textContent="Submit Pickup Details";pb.disabled=false;return;}
+      var dv=el("del-"+tid);
+      if(dv){dv.style.display="block";dv.textContent="Delivery: "+(res.deliveryDate||"")+" (In-Transit)";}
+      pb.textContent="Submitted"; pb.className="btn btng btns";
+      setTimeout(function(){var f=el("s3form-"+tid);if(f)f.style.display="none";loadS3();},1500);
+    }); return;
+  }
+});
+
+// Pickup date -> auto delivery date (+5 days)
+document.addEventListener("change",function(ev4){
+  if(!ev4.target.classList.contains("pd-inp")) return;
+  var tid=ev4.target.dataset.tid;
+  var pd=new Date(ev4.target.value);
+  if(isNaN(pd.getTime())) return;
+  var dl=new Date(pd.getTime()+(5*86400000));
+  var dlStr=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][dl.getMonth()]+" "+dl.getDate()+" "+dl.getFullYear();
+  var dv=el("del-"+tid);
+  if(dv){dv.style.display="block";dv.textContent="Expected delivery: "+dlStr+" (pickup + 5 days)";}
+});
+function s3tab(t){
+  var pw=el("s3-pickups-wrap"), cv=el("s3-cal");
+  if(pw) pw.style.display=t==="list"?"block":"none";
+  if(cv) cv.style.display=t==="cal"?"block":"none";
+  el("s3t1").className="btn btns"+(t==="list"?" btnp":"");
+  el("s3t2").className="btn btns"+(t==="cal"?" btnp":"");
+  if(t==="cal"){
+    get({action:"tokens"},function(rows){
+      if(Array.isArray(rows)) allTokens=rows;
+      buildCal("cal3",new Date(),allTokens,function(dy,mo,yr){
+        calDayClick(dy,mo,yr,"cal3-title","cal3-list");
+      });
+    });
+  }
+}
+// -- STEP 4 - GATE IN (LR#) ------------------------------------------------
+el("gate-in-btn").addEventListener("click",doGateIn);
+el("s4-lr").addEventListener("keydown",function(e){if(e.key==="Enter")doGateIn();});
+function doGateIn(){
+  var lr=el("s4-lr").value.trim(); if(!lr){alert("Enter LR number.");return;}
+  html("s4-res",'<div class="ld" style="padding:12px"><div class="sp"></div></div>');
+  get({action:"lookupLR",lr:lr},function(res){
+    if(!res.found){html("s4-res",'<div class="al ae"><b>LR not found: '+lr+'</b><br>Check the LR number and ensure the vehicle is in transit.</div>');return;}
+    var t=res.token;
+    if(t.status==="Arrived at Warehouse"||t.status==="Vehicle Exited"||t.status==="Closed"){html("s4-res",'<div class="al aw">Token '+t.id+' already has status: <b>'+t.status+'</b></div>');return;}
+    var div=document.createElement("div");
+    div.innerHTML='<div class="al as" style="margin-bottom:12px"><b>Record found</b> - '+t.id+'<br>Vendor: '+t.vendor+' | Vehicle: <b>'+t.vehicle+'</b> | Boxes: '+t.boxes+'<br>Appointment: '+(t.deliveryDate||"-")+' '+(t.apptTime||"")+'</div><div id="gi-done"></div>';
+    var dockSel=document.createElement("select");dockSel.style.cssText="width:130px;font-size:12px;margin-right:8px";
+    [13,14,15,16,17,18,19].forEach(function(d){var o=document.createElement("option");o.value="Dock "+d;o.textContent="Dock "+d;if(d===15)o.selected=true;dockSel.appendChild(o);});
+    var confirmBtn=document.createElement("button");confirmBtn.className="btn btng btns";confirmBtn.textContent="Confirm Gate In";
+    confirmBtn.addEventListener("click",function(){
+      confirmBtn.textContent="Processing...";confirmBtn.disabled=true;
+      post("gateIn",{lr:lr,dock:dockSel.value},function(r){
+        if(r.error){html("gi-done",'<div class="al ae" style="margin-top:8px">'+r.error+'</div>');confirmBtn.textContent="Confirm Gate In";confirmBtn.disabled=false;return;}
+        var ts=new Date(),timeStr=ts.getHours().toString().padStart(2,"0")+":"+ts.getMinutes().toString().padStart(2,"0");
+        html("gi-done",'<div class="al as" style="margin-top:8px">Gate In confirmed. '+dockSel.value+' assigned at '+timeStr+'.</div>');
+        el("s4-lr").value="";
+      });
+    });
+    div.insertBefore(dockSel,div.querySelector("#gi-done"));
+    div.insertBefore(confirmBtn,div.querySelector("#gi-done"));
+    el("s4-res").innerHTML=""; el("s4-res").appendChild(div);
+  });
+}
+
+// -- STEP 6 - GATE OUT (LR#) -----------------------------------------------
+function loadS4(){ el("s4-res").innerHTML=""; el("s4-lr").value=""; }
+function loadS6(){ el("s6-res").innerHTML=""; el("s6-lr").value=""; }
+el("gate-out-btn").addEventListener("click",doGateOut);
+el("s6-lr").addEventListener("keydown",function(e){if(e.key==="Enter")doGateOut();});
+function doGateOut(){
+  var lr=el("s6-lr").value.trim(); if(!lr){alert("Enter LR number.");return;}
+  html("s6-res",'<div class="ld" style="padding:12px"><div class="sp"></div></div>');
+  get({action:"lookupLR",lr:lr},function(res){
+    if(!res.found){html("s6-res",'<div class="al ae"><b>LR not found: '+lr+'</b><br>Check the LR number. Ensure Gate In was completed first.</div>');return;}
+    var t=res.token;
+    if(t.status==="Vehicle Exited"||t.status==="Closed"){html("s6-res",'<div class="al aw">Already processed: Token '+t.id+' is "'+t.status+'"</div>');return;}
+    if(t.status!=="Arrived at Warehouse"){html("s6-res",'<div class="al aw"><b>Cannot gate out:</b> Token '+t.id+' has status "'+t.status+'". Complete Gate In first.</div>');return;}
+    var div=document.createElement("div");
+    div.innerHTML='<div class="al as" style="margin-bottom:12px"><b>Record found - ready for exit</b><br>Token: '+t.id+' | Vendor: '+t.vendor+'<br>Vehicle: <b>'+t.vehicle+'</b> | Boxes: '+t.boxes+'<br>Dock: '+(t.dock||"-")+'</div><div id="go-done"></div>';
+    var confirmBtn=document.createElement("button");confirmBtn.className="btn btng btns";confirmBtn.textContent="Confirm Gate Out";
+    confirmBtn.addEventListener("click",function(){
+      confirmBtn.textContent="Processing...";confirmBtn.disabled=true;
+      post("gateOut",{vehicle:t.vehicle||lr,lr:lr},function(r){
+        if(r.error){html("go-done",'<div class="al ae" style="margin-top:8px">'+r.error+'</div>');confirmBtn.textContent="Confirm Gate Out";confirmBtn.disabled=false;return;}
+        var ts=new Date(),timeStr=ts.getHours().toString().padStart(2,"0")+":"+ts.getMinutes().toString().padStart(2,"0");
+        html("go-done",'<div class="al as" style="margin-top:8px">Vehicle <b>'+t.vehicle+'</b> exited at <b>'+timeStr+'</b>.<br>Token: '+t.id+' - Warehouse notified for DMS upload.</div>');
+        el("s6-lr").value="";
+      });
+    });
+    div.appendChild(confirmBtn);
+    el("s6-res").innerHTML=""; el("s6-res").appendChild(div);
+  });
+}
+
+// -- STEP 7 ----------------------------------------------------------------
+function loadS7(){
+  get({action:"tokens",step:"6"},function(rows){
+    var c=el("s7-body");
+    if(!Array.isArray(rows)||!rows.length){c.innerHTML='<div class="al as">All closed. No pending uploads.</div>';return;}
+    c.innerHTML="";
+    rows.forEach(function(t){
+      var div=document.createElement("div");div.className="tok";div.id="dm-"+t.id;
+      // Build token-specific Drive folder URL
+    var folderId="";if(t.driveUrl){var mUrl=t.driveUrl.match(/folders\/([a-zA-Z0-9_-]+)/);if(mUrl)folderId=mUrl[1];}var fUrl=folderId?"https://drive.google.com/drive/folders/"+folderId:"";if(!fUrl){get({action:"driveFolder",tokenId:t.id},function(res){if(res&&res.url){var link=div.querySelector("a[data-upload]");if(link){link.href=res.url;link.style.display="inline-flex";}var info=div.querySelector(".folder-info");if(info)info.textContent="Token folder ready";}});}var uploadUrl=fUrl;    var fUrl = folderId ? "https://drive.google.com/drive/folders/"+folderId : "";
+    // If no folder yet, fetch it from backend
+    if(!fUrl) {
+      get({action:"driveFolder",tokenId:t.id},function(res){
+        if(res&&res.url){
+          var link=div.querySelector("a[data-upload]");
+          if(link){link.href=res.url;link.style.display="inline-flex";}
+          var info=div.querySelector(".folder-info");
+          if(info) info.textContent="Token folder ready";
+        }
+      });
+    }
+    var uploadUrl = fUrl;
+    div.innerHTML='<div style="flex:1">'+
+      '<div class="tid">'+t.id+' | Invoice: '+(t.invoice||"-")+'</div>'+
+      '<div class="ttl2">'+t.vendor+' - PO: '+(t.po||"-")+'</div>'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-top:4px">'+
+      '<a href="'+uploadUrl+'" data-upload="1" target="_blank" rel="noopener noreferrer" '+
+        'style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#1d4ed8;color:#fff;border-radius:6px;font-size:11px;font-weight:600;text-decoration:none">'+
+        '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 1v10M3 7l5 5 5-5"/><path d="M2 14h12"/></svg>'+
+        'Upload Documents'+
+      '</a>'+
+      '<span style="font-size:10px;color:var(--faint)">'+
+        (fUrl?"Token folder ready":"Upload to master folder - name file "+t.id)+
+      '</span></div></div><div class="tac"></div>';
+      var openBtn=document.createElement("a");
+      openBtn.href=fUrl||"#"; openBtn.target="_blank"; openBtn.rel="noopener";
+      openBtn.className="btn btns"; openBtn.textContent="Open Folder";
+      openBtn.style.display=fUrl?"inline-flex":"none";
+      var btn=document.createElement("button");btn.className="btn btnp btns";btn.textContent="Mark Uploaded & Close";
+      btn.addEventListener("click",function(){
+        btn.textContent="Closing...";btn.disabled=true;
+        post("closeDMS",{id:t.id,driveLink:fUrl},function(res){
+          if(res.error){alert(res.error);btn.textContent="Mark Uploaded & Close";btn.disabled=false;return;}
+          btn.textContent="Closed OK";btn.className="btn btng btns";div.style.opacity=".5";
+          if(res.driveLink) { openBtn.href=res.driveLink; openBtn.style.display="inline-flex"; }
+        });
+      });
+      div.querySelector(".tac").appendChild(openBtn); div.querySelector(".tac").appendChild(btn); c.appendChild(div);
+    });
+  });
+}
+
+// -- MASTER DATA -----------------------------------------------------------
+function loadMaster(){get({action:"vendors"},function(vs){get({action:"partners"},function(ps){var vHtml="<div class=\"card\"><div class=\"ch\"><div class=\"ct\">Manufacturing Vendors</div></div><div class=\"tw\"><table><thead><tr><th>Code</th><th>Name</th><th>City</th><th>Pin</th><th>POC Name</th><th>POC Mobile</th><th>Transit</th><th>Pref LP</th><th>Status</th><th>Action</th></tr></thead><tbody>"+(vs||[]).map(function(v){var vst=v.active||"Active";return"<tr><td class=\"mono\" style=\"font-size:10px\">"+v.code+"</td><td style=\"font-weight:500\">"+v.name+"</td><td>"+v.city+"</td><td>"+v.pin+"</td><td>"+v.pocName+"</td><td>"+v.pocMobile+"</td><td><span class=\"badge "+(v.transit==="Surface"?"bt":"ba")+"\">"+v.transit+"</span></td><td>"+v.lp+"</td><td><span class=\"badge "+(vst==="Active"?"bg":"br")+"\">"+vst+"</span></td><td><button class=\"btn btns edit-vendor-btn\" data-code=\""+v.code+"\" data-name=\""+v.name+"\" data-city=\""+v.city+"\" data-addr=\""+v.address+"\" data-pin=\""+v.pin+"\" data-tr=\""+v.transit+"\" data-poc=\""+v.pocName+"\" data-mob=\""+v.pocMobile+"\" data-email=\""+v.pocEmail+"\" data-lp=\""+v.lp+"\" data-status=\""+vst+"\">Edit</button></td></tr>";}).join("")+"</tbody></table></div></div>";var pHtml="<div class=\"card\"><div class=\"ch\"><div class=\"ct\">Logistics Partners</div></div><div class=\"tw\"><table><thead><tr><th>Code</th><th>Name</th><th>Contact</th><th>Mobile</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>"+(ps||[]).map(function(p){var st=p.active||p.status||"Active";return"<tr><td class=\"mono\" style=\"font-size:10px\">"+p.code+"</td><td style=\"font-weight:500\">"+p.name+"</td><td>"+p.contact+"</td><td>"+p.mobile+"</td><td class=\"mono\" style=\"font-size:11px\">"+p.email+"</td><td><span class=\"badge "+(st==="Active"?"bg":"br")+"\">"+st+"</span></td><td><button class=\"btn btns edit-partner-btn\" data-code=\""+p.code+"\" data-name=\""+p.name+"\" data-contact=\""+p.contact+"\" data-mobile=\""+p.mobile+"\" data-email=\""+p.email+"\" data-status=\""+st+"\">Edit</button></td></tr>";}).join("")+"</tbody></table></div></div>";html("master-body",vHtml+pHtml);document.getElementById("master-body").addEventListener("click",function(e){var ev=e.target.closest(".edit-vendor-btn");if(ev){el("ve-name").value=ev.dataset.name||"";el("ve-city").value=ev.dataset.city||"";el("ve-addr").value=ev.dataset.addr||"";el("ve-pin").value=ev.dataset.pin||"";el("ve-poc").value=ev.dataset.poc||"";el("ve-mob").value=ev.dataset.mob||"";el("ve-email").value=ev.dataset.email||"";el("ve-lp").value=ev.dataset.lp||"";try{el("ve-tr").value=ev.dataset.tr||"Surface";}catch(x){}el("vend-edit-modal").dataset.editCode=ev.dataset.code;el("vend-edit-modal").dataset.editStatus=ev.dataset.status||"Active";var tBtn=el("toggle-vend-status");if(tBtn)tBtn.textContent=ev.dataset.status==="Active"?"Disable Vendor":"Enable Vendor";el("vend-edit-modal").classList.add("on");}var ep=e.target.closest(".edit-partner-btn");if(ep){el("pm-name").value=ep.dataset.name||"";el("pm-cont").value=ep.dataset.contact||"";el("pm-mob").value=ep.dataset.mobile||"";el("pm-email").value=ep.dataset.email||"";el("part-modal").classList.add("on");el("part-modal").dataset.editCode=ep.dataset.code;el("part-modal").dataset.editStatus=ep.dataset.status||"Active";el("part-modal").querySelector(".mhdr").firstChild.textContent="Edit - "+ep.dataset.code;var tBtn2=document.getElementById("toggle-partner-status");if(tBtn2){tBtn2.textContent=ep.dataset.status==="Active"?"Disable Partner":"Enable Partner";tBtn2.style.display="inline-flex";}}});});});}el("add-vend-btn").addEventListener("click",function(){el("vend-modal").classList.add("on");});
+el("add-part-btn").addEventListener("click",function(){
+  el("part-modal").dataset.editCode="";
+  el("part-modal").querySelector(".mhdr").firstChild.textContent="Add Logistics Partner";
+  ["pm-name","pm-cont","pm-mob","pm-email"].forEach(function(id){el(id).value="";});
+  var tBtn=document.getElementById("toggle-partner-status"); if(tBtn) tBtn.style.display="none";
+  el("part-modal").classList.add("on");
+});
+el("close-vend-btn").addEventListener("click",function(){el("vend-modal").classList.remove("on");});
+el("cancel-vend-btn").addEventListener("click",function(){el("vend-modal").classList.remove("on");});
+el("close-part-btn").addEventListener("click",function(){el("part-modal").classList.remove("on");});
+el("cancel-part-btn").addEventListener("click",function(){el("part-modal").classList.remove("on");});
+
+// Edit partner - delegated listener on master-body
+document.getElementById("master-body").addEventListener("click",function(e){
+  var btn=e.target.closest(".edit-partner-btn"); if(!btn) return;
+  el("pm-name").value=btn.dataset.name||"";
+  el("pm-cont").value=btn.dataset.contact||"";
+  el("pm-mob").value=btn.dataset.mobile||"";
+  el("pm-email").value=btn.dataset.email||"";
+  el("part-modal").classList.add("on");
+  // Store code for save
+  el("part-modal").dataset.editCode=btn.dataset.code;
+  el("part-modal").dataset.editStatus=btn.dataset.status||"Active";
+  // Update modal title and add toggle button
+  el("part-modal").querySelector(".mhdr").firstChild.textContent=
+    "Edit Partner - "+btn.dataset.code;
+  // Show status toggle
+  var tBtn=document.getElementById("toggle-partner-status");
+  if(tBtn){
+    var st=btn.dataset.status||"Active";
+    tBtn.textContent=st==="Active"?"Disable Partner":"Enable Partner";
+    tBtn.className="btn btns "+(st==="Active"?"":"btnp");
+    tBtn.style.display="inline-flex";
+  }
+});
+
+document.addEventListener("click",function(e){
+  var tBtn=e.target.closest("#toggle-partner-status"); if(!tBtn) return;
+  var code=el("part-modal").dataset.editCode;
+  var curStatus=el("part-modal").dataset.editStatus||"Active";
+  var newStatus=curStatus==="Active"?"Inactive":"Active";
+  post("editPartner",{code:code,status:newStatus},function(res){
+    if(res.error){alert(res.error);return;}
+    el("part-modal").classList.remove("on");loadMaster();
+  });
+});
+el("save-vend-btn").addEventListener("click",function(){
+  var name=el("vm-name").value.trim(),city=el("vm-city").value.trim(),poc=el("vm-poc").value.trim(),mob=el("vm-mob").value.trim();
+  if(!name||!city||!poc||!mob){el("vm-err").textContent="Name, city, POC name and mobile required.";el("vm-err").style.display="block";return;}
+  el("vm-err").style.display="none";
+  post("addVendor",{name:name,address:el("vm-addr").value,city:city,pin:el("vm-pin").value,pocName:poc,pocMobile:mob,pocEmail:el("vm-email").value,transit:el("vm-tr").value,lp:el("vm-lp").value},function(res){
+    if(res.error){el("vm-err").textContent=res.error;el("vm-err").style.display="block";return;}
+    el("vend-modal").classList.remove("on");["vm-name","vm-city","vm-addr","vm-pin","vm-poc","vm-mob","vm-email","vm-lp"].forEach(function(id){el(id).value="";});loadMaster();
+  });
+});
+el("save-part-btn").addEventListener("click",function(){
+  var name=el("pm-name").value.trim(); if(!name){alert("Partner name required.");return;}
+  var editCode=el("part-modal").dataset.editCode||"";
+  var action=editCode?"editPartner":"addPartner";
+  var data={name:name,contact:el("pm-cont").value,mobile:el("pm-mob").value,email:el("pm-email").value};
+  if(editCode) data.code=editCode;
+  post(action,data,function(res){
+    if(res.error){alert(res.error);return;}
+    el("part-modal").classList.remove("on");
+    el("part-modal").dataset.editCode="";
+    ["pm-name","pm-cont","pm-mob","pm-email"].forEach(function(id){el(id).value="";});
+    loadMaster();
+  });
+});
+
+// -- USER MANAGEMENT -------------------------------------------------------
+function loadConfig(){
+  get({action:"etaConfig"},function(eta){get({action:"vehicleConfig"},function(vc){get({action:"dropConfig"},function(dc){
+    var etaRows=Array.isArray(eta)?eta:[];
+    var vcRows=Array.isArray(vc)?vc:[];
+    var dcRows=Array.isArray(dc)?dc:[];
+    html("config-body",
+      // ETA Config
+      '<div class="card"><div class="ch"><div class="ct">Transit ETA Configuration</div><div style="display:flex;gap:6px"><button class="btn btns btnp" id="cfg-eta-add">+ Add Route</button><button class="btn btns" id="cfg-eta-save">&#10003; Save ETA</button></div></div><div class="tw"><table><thead><tr><th>From City</th><th>To City</th><th>Transit Days</th><th>Label</th><th></th></tr></thead><tbody id="cfg-eta-body">'+
+      etaRows.map(function(r){return'<tr><td><input value="'+r.from+'" class="eta-from" style="width:140px"></td><td><input value="'+r.to+'" class="eta-to" style="width:120px"></td><td><input type="number" value="'+r.days+'" class="eta-days" style="width:60px"></td><td><input value="'+r.label+'" class="eta-label" style="width:180px"></td><td><button class="btn btns cfg-del-row">x</button></td></tr>';}).join("")+
+      '</tbody></table></div></div>'+
+      // Vehicle Config
+      '<div class="card"><div class="ch"><div class="ct">Vehicle Size Configuration</div><div style="display:flex;gap:6px"><button class="btn btns btnp" id="cfg-vc-add">+ Add Size</button><button class="btn btns" id="cfg-vc-save">&#10003; Save Sizes</button></div></div><div class="tw"><table><thead><tr><th>Vehicle Size</th><th>Max Boxes</th><th>Max Weight MT</th><th>Display Label</th><th></th></tr></thead><tbody id="cfg-vc-body">'+
+      vcRows.map(function(r){return'<tr><td><input value="'+r.size+'" class="vc-size" style="width:90px"></td><td><input type="number" value="'+r.maxBoxes+'" class="vc-boxes" style="width:70px"></td><td><input type="number" step="0.1" value="'+r.maxWT+'" class="vc-wt" style="width:70px"></td><td><input value="'+r.label+'" class="vc-label" style="width:200px"></td><td><button class="btn btns cfg-del-row">x</button></td></tr>';}).join("")+
+      '</tbody></table></div></div>'+
+      // Drop Location Config
+      '<div class="card"><div class="ch"><div class="ct">Drop Location Configuration</div><div style="display:flex;gap:6px"><button class="btn btns btnp" id="cfg-dc-add">+ Add Location</button><button class="btn btns" id="cfg-dc-save">&#10003; Save Drops</button></div></div><div class="tw"><table><thead><tr><th>Name</th><th>Address</th><th>City</th><th>Pin</th><th>Contact</th><th>Docks</th><th>Active</th><th></th></tr></thead><tbody id="cfg-dc-body">'+
+      dcRows.map(function(r){return'<tr><td><input value="'+r.name+'" class="dc-name" style="width:100px"></td><td><input value="'+r.address+'" class="dc-addr" style="width:150px"></td><td><input value="'+r.city+'" class="dc-city" style="width:80px"></td><td><input value="'+r.pin+'" class="dc-pin" style="width:60px"></td><td><input value="'+r.contact+'" class="dc-contact" style="width:120px"></td><td><input value="'+r.docks+'" class="dc-docks" style="width:80px"></td><td><select class="dc-active" style="width:80px"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></td><td><button class="btn btns cfg-del-row">x</button></td></tr>';}).join("")+
+      '</tbody></table></div></div>'
+    );
+    // Set active selects
+    document.querySelectorAll(".dc-active").forEach(function(sel,i){if(dcRows[i])sel.value=dcRows[i].active||"Active";});
+    // Delete row
+    document.getElementById("config-body").addEventListener("click",function(e){if(e.target.classList.contains("cfg-del-row"))e.target.closest("tr").remove();});
+    // ETA add row
+    document.getElementById("cfg-eta-add").addEventListener("click",function(){var tb=document.getElementById("cfg-eta-body");var tr=document.createElement("tr");tr.innerHTML='<td><input placeholder="From City" class="eta-from" style="width:140px"></td><td><input placeholder="Mumbai" class="eta-to" style="width:120px"></td><td><input type="number" placeholder="3" class="eta-days" style="width:60px"></td><td><input placeholder="Route label" class="eta-label" style="width:180px"></td><td><button class="btn btns cfg-del-row">x</button></td>';tb.appendChild(tr);});
+    // ETA save
+    document.getElementById("cfg-eta-save").addEventListener("click",function(){var rows=[];document.querySelectorAll("#cfg-eta-body tr").forEach(function(tr){var f=tr.querySelector(".eta-from").value.trim(),t=tr.querySelector(".eta-to").value.trim(),d=parseInt(tr.querySelector(".eta-days").value)||1,l=tr.querySelector(".eta-label").value.trim()||f+" to "+t;if(f&&t)rows.push({from:f,to:t,days:d,label:l});});post("saveETAConfig",rows,function(res){if(res.error){alert(res.error);return;}alert("ETA saved: "+rows.length+" routes.");});});
+    // VC add row
+    document.getElementById("cfg-vc-add").addEventListener("click",function(){var tb=document.getElementById("cfg-vc-body");var tr=document.createElement("tr");tr.innerHTML='<td><input placeholder="20 feet" class="vc-size" style="width:90px"></td><td><input type="number" placeholder="300" class="vc-boxes" style="width:70px"></td><td><input type="number" step="0.1" placeholder="3.5" class="vc-wt" style="width:70px"></td><td><input placeholder="20 ft label" class="vc-label" style="width:200px"></td><td><button class="btn btns cfg-del-row">x</button></td>';tb.appendChild(tr);});
+    // VC save
+    document.getElementById("cfg-vc-save").addEventListener("click",function(){var rows=[];document.querySelectorAll("#cfg-vc-body tr").forEach(function(tr){var s=tr.querySelector(".vc-size").value.trim(),b=parseInt(tr.querySelector(".vc-boxes").value)||0,w=parseFloat(tr.querySelector(".vc-wt").value)||0,l=tr.querySelector(".vc-label").value.trim()||s;if(s)rows.push({size:s,maxBoxes:b,maxWT:w,label:l});});post("saveVehicleConfig",rows,function(res){if(res.error){alert(res.error);return;}alert("Vehicle config saved: "+rows.length+" sizes.");loadVehicleConfig();});});
+    // DC add row
+    document.getElementById("cfg-dc-add").addEventListener("click",function(){var tb=document.getElementById("cfg-dc-body");var tr=document.createElement("tr");tr.innerHTML='<td><input placeholder="Name" class="dc-name" style="width:100px"></td><td><input placeholder="Address" class="dc-addr" style="width:150px"></td><td><input placeholder="City" class="dc-city" style="width:80px"></td><td><input placeholder="400001" class="dc-pin" style="width:60px"></td><td><input placeholder="+91 ..." class="dc-contact" style="width:120px"></td><td><input placeholder="13,14" class="dc-docks" style="width:80px"></td><td><select class="dc-active" style="width:80px"><option>Active</option><option>Inactive</option></select></td><td><button class="btn btns cfg-del-row">x</button></td>';tb.appendChild(tr);});
+    // DC save
+    document.getElementById("cfg-dc-save").addEventListener("click",function(){var rows=[];document.querySelectorAll("#cfg-dc-body tr").forEach(function(tr){var n=tr.querySelector(".dc-name").value.trim(),a=tr.querySelector(".dc-addr").value.trim(),c=tr.querySelector(".dc-city").value.trim(),p=tr.querySelector(".dc-pin").value.trim(),ct=tr.querySelector(".dc-contact").value.trim(),dk=tr.querySelector(".dc-docks").value.trim(),ac=tr.querySelector(".dc-active").value;if(n)rows.push({name:n,address:a,city:c,pin:p,contact:ct,docks:dk,active:ac});});post("saveDropConfig",rows,function(res){if(res.error){alert(res.error);return;}alert("Drop locations saved: "+rows.length+" locations.");});});
+  });});});
+}
+
+function loadUsers(){
+  get({action:"users"},function(rows){
+    if(!Array.isArray(rows)){html("users-body",'<div style="padding:20px;color:var(--red)">Failed.</div>');return;}
+    var rc={admin:"bb",supply_planning:"bt",logistics_team:"bp",logistics_partner:"bo",security:"br",warehouse:"bg",approver:"ba"};
+    html("users-body",'<table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Action</th></tr></thead><tbody>'+
+      rows.map(function(u){return'<tr><td class="mono" style="font-size:10px">'+u.id+'</td><td style="font-weight:500">'+u.name+'</td><td class="mono" style="font-size:11px">'+u.email+'</td><td><span class="badge '+(rc[u.role]||"bx")+'">'+(u.role||"").replace("_"," ")+'</span></td><td><span class="badge '+(u.status==="Active"?"bg":"br")+'">'+u.status+'</span></td><td style="font-size:10px;color:var(--faint)">'+u.created+'</td><td><button class="btn btns toggle-user-btn" data-uid="'+u.id+'" data-status="'+u.status+'" data-name="'+u.name+'" style="font-size:10px">'+(u.status==="Active"?"Deactivate":"Reactivate")+'</button></td></tr>';}).join("")+'</tbody></table>');
+    el("users-body").addEventListener("click",function(e){
+      var btn=e.target.closest(".toggle-user-btn"); if(!btn) return;
+      if(!confirm((btn.dataset.status==="Active"?"Deactivate":"Reactivate")+" "+btn.dataset.name+"?")) return;
+      post("updateUser",{id:btn.dataset.uid,status:btn.dataset.status==="Active"?"Inactive":"Active"},function(r){if(r.ok)loadUsers();else alert("Error: "+(r.error||"Unknown"));});
+    });
+  });
+}
+el("add-user-btn").addEventListener("click",function(){el("add-user-form").style.display="block";});
+el("cancel-user-btn").addEventListener("click",function(){el("add-user-form").style.display="none";});
+el("save-user-btn").addEventListener("click",function(){
+  var name=el("nu-name").value.trim(),email=el("nu-email").value.trim().toLowerCase();
+  if(!name||!email){html("nu-res",'<div class="al ae" style="font-size:11px">Name and email required.</div>');return;}
+  var btn=this;btn.textContent="Creating...";btn.disabled=true;
+  post("createUser",{name:name,email:email,role:el("nu-role").value,dept:el("nu-dept").value},function(res){
+    btn.textContent="Create & Send Welcome Email";btn.disabled=false;
+    if(res.error){html("nu-res",'<div class="al ae" style="font-size:11px">'+res.error+'</div>');return;}
+    html("nu-res",'<div class="al as" style="font-size:11px">User '+name+' created ('+res.id+'). Welcome email sent.</div>');
+    ["nu-name","nu-email","nu-dept"].forEach(function(id){el(id).value="";}); loadUsers();
+  });
+});
+
+// -- CALENDAR --------------------------------------------------------------
+var MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+var DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function buildCal(containerId,date,tokens,clickFn){
+  var y=date.getFullYear(),m=date.getMonth();
+  calState[containerId]={y:y,m:m,fn:clickFn};
+  var first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),today=new Date();
+  var map={};
+  tokens.forEach(function(t){var ds=t.deliveryDate||t.pickupDate||"";if(!ds)return;try{var d=new Date(ds);if(isNaN(d.getTime()))return;if(d.getFullYear()===y&&d.getMonth()===m){var k=d.getDate();map[k]=map[k]||[];map[k].push(t);}}catch(e){}});
+  var container=el(containerId); if(!container) return;
+  var hdr=document.createElement("div");hdr.className="chdr";hdr.style.cssText="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border)";
+  hdr.innerHTML='<div style="font-size:13px;font-weight:600">'+MONTHS[m]+" "+y+'</div><div style="display:flex;gap:6px"></div>';
+  var navDiv=hdr.querySelector("div:last-child");
+  ["&#8592;","Today","&#8594;"].forEach(function(lbl,i){
+    var b=document.createElement("button");b.className="btn btns";b.innerHTML=lbl;
+    b.addEventListener("click",function(){var st=calState[containerId];if(i===1){st.y=new Date().getFullYear();st.m=new Date().getMonth();}else{st.m+=(i===0?-1:1);if(st.m<0){st.m=11;st.y--;}if(st.m>11){st.m=0;st.y++;}}buildCal(containerId,new Date(st.y,st.m,1),allTokens,st.fn);});
+    navDiv.appendChild(b);
+  });
+  var grid=document.createElement("div");grid.style.cssText="display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--border);border-top:1px solid var(--border)";
+  DAYS.forEach(function(d){var dh=document.createElement("div");dh.style.cssText="background:#f9fafb;text-align:center;padding:5px;font-size:10px;font-weight:700;color:var(--muted);border-right:1px solid var(--border);border-bottom:1px solid var(--border)";dh.textContent=d;grid.appendChild(dh);});
+  for(var i=0;i<first;i++){var e2=document.createElement("div");e2.style.cssText="min-height:60px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)";grid.appendChild(e2);}
+  for(var day=1;day<=days;day++){
+    var isToday=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===day;
+    var cc=document.createElement("div");
+    cc.style.cssText="min-height:60px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:4px;cursor:pointer"+(isToday?";background:#eff6ff":"");
+    var apts=map[day]||[];
+    cc.innerHTML='<div style="font-size:11px;font-weight:600;margin-bottom:2px">'+day+"</div>"+apts.slice(0,2).map(function(t){var cls=t.status==="In-Transit"?"#ede9fe":t.status==="Partner Assigned"?"#fef9c3":"#dcfce7";var col=t.status==="In-Transit"?"#5b21b6":t.status==="Partner Assigned"?"#854d0e":"#166534";return'<div style="font-size:9px;font-weight:600;padding:2px 4px;border-radius:3px;margin-bottom:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:'+cls+';color:'+col+'">'+(t.vendor||"").slice(0,10)+"</div>";}).join("")+(apts.length>2?'<div style="font-size:9px;color:var(--faint)">+'+(apts.length-2)+" more</div>":"");
+    (function(cd,cm,cy){cc.addEventListener("click",function(){clickFn(cd,cm,cy);});})(day,m,y);
+    grid.appendChild(cc);
+  }
+  container.innerHTML=""; container.appendChild(hdr); container.appendChild(grid);
+}
+function calDayClick(day,m,y,titleId,listId){
+  var mn=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  el(titleId).textContent=day+" "+mn[m]+" "+y;
+  var toks=allTokens.filter(function(t){var ds=t.deliveryDate||t.pickupDate||"";try{var d=new Date(ds);return d.getFullYear()===y&&d.getMonth()===m&&d.getDate()===day;}catch(e){return false;}});
+  var c=el(listId);
+  if(!toks.length){c.innerHTML='<div style="padding:16px;text-align:center;color:var(--faint);font-size:12px">No appointments this day</div>';return;}
+  c.innerHTML="";
+  toks.forEach(function(t){var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px";row.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--blue);min-width:80px;font-family:monospace">'+(t.apptTime||"TBD")+'</div><div style="flex:1"><div style="font-family:monospace;font-size:9px;color:var(--faint)">'+t.id+'</div><div style="font-weight:600">'+t.vendor+'</div><div style="font-size:10px;color:var(--muted)">'+t.boxes+' boxes | '+t.drop+'</div></div><div>'+sb(t.status)+'</div>';c.appendChild(row);});
+}
+
+// -- INIT -----------------------------------------------------------------
+setUser({ name:"Admin", email:"admin@mosaicwellness.in", role:"admin" });
+// Safe addEventListener wrapper
+function safeOn(id, evt, fn) { var e = document.getElementById(id); if(e) e.addEventListener(evt, fn); }
+safeOn("close-slot-btn", "click", function(){el("slot-modal").classList.remove("on");});("click",function(){el("slot-modal").classList.remove("on");});
+// Vendor edit modal
+safeOn("close-vend-edit-btn","click",function(){el("vend-edit-modal").classList.remove("on");});
+safeOn("cancel-vend-edit-btn","click",function(){el("vend-edit-modal").classList.remove("on");});
+safeOn("save-vend-edit-btn","click",function(){
+  var code=el("vend-edit-modal").dataset.editCode||"";if(!code)return;
+  var btn=this;btn.textContent="Saving...";btn.disabled=true;
+  post("editVendor",{code:code,name:el("ve-name").value,city:el("ve-city").value,address:el("ve-addr").value,pin:el("ve-pin").value,transit:el("ve-tr").value,pocName:el("ve-poc").value,pocMobile:el("ve-mob").value,pocEmail:el("ve-email").value,lp:el("ve-lp").value},function(res){
+    btn.textContent="Save Changes";btn.disabled=false;
+    if(res.error){alert(res.error);return;}
+    el("vend-edit-modal").classList.remove("on");loadMaster();
+  });
+});
+safeOn("toggle-vend-status","click",function(){
+  var code=el("vend-edit-modal").dataset.editCode||"";if(!code)return;
+  var cur=el("vend-edit-modal").dataset.editStatus||"Active";
+  var newSt=cur==="Active"?"Inactive":"Active";
+  post("editVendor",{code:code,status:newSt},function(res){
+    if(res.error){alert(res.error);return;}
+    el("vend-edit-modal").classList.remove("on");loadMaster();
+  });
+});
+loadDash();
+
+// -- PWA / MOBILE ---------------------------------------------
+(function(){
+  // Hamburger menu
+  var hbtn = document.getElementById("hamburger-btn");
+  var sidebar = document.querySelector(".sidebar");
+  var overlay = document.getElementById("sidebar-overlay");
+  if(hbtn && sidebar && overlay){
+    hbtn.addEventListener("click", function(){
+      sidebar.classList.toggle("open");
+      overlay.classList.toggle("on");
+    });
+    overlay.addEventListener("click", function(){
+      sidebar.classList.remove("open");
+      overlay.classList.remove("on");
+    });
+    // Close sidebar when nav item clicked on mobile
+    document.querySelectorAll(".ni").forEach(function(ni){
+      ni.addEventListener("click", function(){
+        if(window.innerWidth <= 768){
+          sidebar.classList.remove("open");
+          overlay.classList.remove("on");
+        }
+      });
+    });
+  }
+
+  // PWA install prompt
+  var deferredPrompt = null;
+  var installBanner = null;
+  window.addEventListener("beforeinstallprompt", function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show subtle install banner
+    installBanner = document.createElement("div");
+    installBanner.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:12px;font-weight:600;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;white-space:nowrap";
+    installBanner.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"/></svg>Add to Home Screen";
+    installBanner.addEventListener("click", function(){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(){ installBanner.remove(); deferredPrompt=null; });
+    });
+    setTimeout(function(){
+      document.body.appendChild(installBanner);
+      setTimeout(function(){ if(installBanner && installBanner.parentNode) installBanner.remove(); }, 8000);
+    }, 3000);
+  });
+
+  // Service Worker
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register("sw.js").then(function(){
+      console.log("SW registered");
+    }).catch(function(){});
+  }
+})();
+
+</script>
+</body>
+</html>
