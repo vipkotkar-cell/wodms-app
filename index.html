@@ -140,19 +140,24 @@ input[readonly]{background:#f9fafb;color:var(--muted)}
 .mhdr{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 
 /* ── MOBILE / PWA ────────────────────────────────────────── */
-.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px;color:#fff;flex-shrink:0}
+.hamburger{display:flex;align-items:center;justify-content:center;background:none;border:none;cursor:pointer;padding:4px;color:#fff;flex-shrink:0}
 .hamburger svg{width:22px;height:22px;display:block}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:89}
 .sidebar-overlay.on{display:block}
 
+/* Desktop: sidebar collapses fully (slide out of view) */
+.sidebar{transition:transform .25s ease, width .25s ease}
+.sidebar.collapsed{width:0;overflow:hidden;border-right:none}
+
 @media(max-width:768px){
-  .hamburger{display:flex;align-items:center;justify-content:center}
   .sidebar{
     position:fixed;left:0;top:0;bottom:0;z-index:90;
     transform:translateX(-100%);transition:transform .25s ease;
-    padding-top:env(safe-area-inset-top,0px)
+    padding-top:env(safe-area-inset-top,0px);
+    width:220px !important
   }
   .sidebar.open{transform:translateX(0)}
+  .sidebar.collapsed{transform:translateX(-100%);width:220px !important}
   .body{flex-direction:column}
   .main{padding-bottom:env(safe-area-inset-bottom,0px)}
   .app{padding-top:env(safe-area-inset-top,0px)}
@@ -1367,7 +1372,7 @@ function calDayClick(day,m,y,titleId,listId){
 setUser({ name:"Admin", email:"admin@mosaicwellness.in", role:"admin" });
 // Safe addEventListener wrapper
 function safeOn(id, evt, fn) { var e = document.getElementById(id); if(e) e.addEventListener(evt, fn); }
-safeOn("close-slot-btn", "click", function(){el("slot-modal").classList.remove("on");});("click",function(){el("slot-modal").classList.remove("on");});
+safeOn("close-slot-btn", "click", function(){el("slot-modal").classList.remove("on");});
 // Vendor edit modal
 safeOn("close-vend-edit-btn","click",function(){el("vend-edit-modal").classList.remove("on");});
 safeOn("cancel-vend-edit-btn","click",function(){el("vend-edit-modal").classList.remove("on");});
@@ -1393,106 +1398,77 @@ loadDash();
 
 // -- PWA / MOBILE ---------------------------------------------
 (function(){
-  // Hamburger menu
-  var hbtn = document.getElementById("hamburger-btn");
+  // ── Hamburger / Sidebar ──────────────────────────────────
+  var hbtn    = document.getElementById("hamburger-btn");
   var sidebar = document.querySelector(".sidebar");
-  var overlay = document.getElementById("sidebar-overlay");
-  if(hbtn && sidebar && overlay){
-    hbtn.addEventListener("click", function(){
-      sidebar.classList.toggle("open");
-      overlay.classList.toggle("on");
-    });
-    overlay.addEventListener("click", function(){
-      sidebar.classList.remove("open");
-      overlay.classList.remove("on");
-    });
-    // Close sidebar when nav item clicked on mobile
-    document.querySelectorAll(".ni").forEach(function(ni){
-      ni.addEventListener("click", function(){
-        if(window.innerWidth <= 768){
-          sidebar.classList.remove("open");
-          overlay.classList.remove("on");
-        }
-      });
-    });
+
+  // Create a single overlay element and append it once
+  var overlay = document.createElement("div");
+  overlay.className = "sidebar-overlay";
+  document.body.appendChild(overlay);
+
+  function openSidebar(){
+    sidebar.classList.add("open");
+    sidebar.classList.remove("collapsed");
+    overlay.classList.add("on");
+  }
+  function closeSidebar(){
+    sidebar.classList.remove("open");
+    overlay.classList.remove("on");
+  }
+  function toggleSidebar(){
+    // On desktop (> 768px) toggle "collapsed" class to hide/show the sidebar
+    if(window.innerWidth > 768){
+      sidebar.classList.toggle("collapsed");
+    } else {
+      // On mobile toggle the slide-in "open" state
+      if(sidebar.classList.contains("open")){
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    }
   }
 
-  // PWA install prompt
+  if(hbtn){
+    hbtn.addEventListener("click", toggleSidebar);
+  }
+
+  // Close slide-in overlay on mobile when tapping outside
+  overlay.addEventListener("click", closeSidebar);
+
+  // Close mobile sidebar when a nav item is tapped
+  document.querySelectorAll(".ni").forEach(function(ni){
+    ni.addEventListener("click", function(){
+      if(window.innerWidth <= 768){ closeSidebar(); }
+    });
+  });
+
+  // ── PWA install prompt ───────────────────────────────────
   var deferredPrompt = null;
-  var installBanner = null;
   window.addEventListener("beforeinstallprompt", function(e){
     e.preventDefault();
     deferredPrompt = e;
-    // Show subtle install banner
-    installBanner = document.createElement("div");
-    installBanner.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:12px;font-weight:600;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;white-space:nowrap";
-    installBanner.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"/></svg>Add to Home Screen";
-    installBanner.addEventListener("click", function(){
+    var banner = document.createElement("div");
+    banner.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:10px 18px;border-radius:24px;font-size:12px;font-weight:600;cursor:pointer;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px;white-space:nowrap";
+    banner.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path d=\"M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"/></svg>Add to Home Screen";
+    banner.addEventListener("click", function(){
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(){ installBanner.remove(); deferredPrompt=null; });
+      deferredPrompt.userChoice.then(function(){ banner.remove(); deferredPrompt=null; });
     });
     setTimeout(function(){
-      document.body.appendChild(installBanner);
-      setTimeout(function(){ if(installBanner && installBanner.parentNode) installBanner.remove(); }, 8000);
+      document.body.appendChild(banner);
+      setTimeout(function(){ if(banner.parentNode) banner.remove(); }, 8000);
     }, 3000);
   });
 
-  // Service Worker
+  // ── Service Worker ───────────────────────────────────────
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").then(function(){
       console.log("SW registered");
     }).catch(function(){});
   }
 })();
-// ================= MOBILE MENU FIX =================
-var hamburger = document.getElementById("hamburger-btn");
-var sidebar = document.querySelector(".sidebar");
-
-// create overlay dynamically
-var overlay = document.createElement("div");
-overlay.className = "sidebar-overlay";
-document.body.appendChild(overlay);
-
-// toggle menu
-hamburger.addEventListener("click", function () {
-  sidebar.classList.toggle("open");
-  overlay.classList.toggle("on");
-});
-
-// close when clicking outside
-overlay.addEventListener("click", function () {
-  sidebar.classList.remove("open");
-  overlay.classList.remove("on");
-});
-
-// close menu after clicking any option (mobile UX fix)
-document.querySelectorAll(".ni").forEach(function(el) {
-  el.addEventListener("click", function() {
-    sidebar.classList.remove("open");
-    overlay.classList.remove("on");
-  });
-});
-window.addEventListener("load", function () {
-  console.log("Menu script loaded");
-
-  var hamburger = document.getElementById("hamburger-btn");
-  var sidebar = document.querySelector(".sidebar");
-
-  var overlay = document.createElement("div");
-  overlay.className = "sidebar-overlay";
-  document.body.appendChild(overlay);
-
-  hamburger.onclick = function () {
-    console.log("Hamburger clicked");
-    sidebar.classList.toggle("open");
-    overlay.classList.toggle("on");
-  };
-
-  overlay.onclick = function () {
-    sidebar.classList.remove("open");
-    overlay.classList.remove("on");
-  };
-});  
 </script>
 </body>
 </html>
