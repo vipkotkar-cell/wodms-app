@@ -1444,7 +1444,34 @@ loadDash();
     }).catch(function(){});
   }
 })();
+// ================= MOBILE MENU FIX =================
+var hamburger = document.getElementById("hamburger-btn");
+var sidebar = document.querySelector(".sidebar");
 
+// create overlay dynamically
+var overlay = document.createElement("div");
+overlay.className = "sidebar-overlay";
+document.body.appendChild(overlay);
+
+// toggle menu
+hamburger.addEventListener("click", function () {
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("on");
+});
+
+// close when clicking outside
+overlay.addEventListener("click", function () {
+  sidebar.classList.remove("open");
+  overlay.classList.remove("on");
+});
+
+// close menu after clicking any option (mobile UX fix)
+document.querySelectorAll(".ni").forEach(function(el) {
+  el.addEventListener("click", function() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("on");
+  });
+});
 </script>
 </body>
 </html>
