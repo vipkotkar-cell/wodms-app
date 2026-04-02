@@ -1472,6 +1472,27 @@ document.querySelectorAll(".ni").forEach(function(el) {
     overlay.classList.remove("on");
   });
 });
+window.addEventListener("load", function () {
+  console.log("Menu script loaded");
+
+  var hamburger = document.getElementById("hamburger-btn");
+  var sidebar = document.querySelector(".sidebar");
+
+  var overlay = document.createElement("div");
+  overlay.className = "sidebar-overlay";
+  document.body.appendChild(overlay);
+
+  hamburger.onclick = function () {
+    console.log("Hamburger clicked");
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("on");
+  };
+
+  overlay.onclick = function () {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("on");
+  };
+});  
 </script>
 </body>
 </html>
