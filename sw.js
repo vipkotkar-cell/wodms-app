@@ -1,4 +1,4 @@
-const CACHE = "wodms-pwa-v1";
+const CACHE = "wodms-pwa-v2";
 const CORE = ["./", "./index.html"];
 
 self.addEventListener("install", function(e){
